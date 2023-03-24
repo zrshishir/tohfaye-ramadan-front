@@ -24,7 +24,7 @@
                 <tr v-for="item in schedules" :key="item.name">
                     <td>{{ getIndex(item) }} Ramadan</td>
                     <td>{{ item.date }}</td>
-                    <td>{{ item.day }}</td>
+                    <td>{{ getWeekDayName(item) }}</td>
                     <td>{{ item.shehri_time }}</td>
                     <td>{{ item.iftar_time }}</td>
                 </tr>
@@ -42,14 +42,12 @@ export default {
         return {
             schedules: [
                 {
-                    date: '24-03-2023',
-                    day: 'Friday',
+                    date: '2023/03/24',
                     shehri_time: '4:43',
                     iftar_time: '6:11',
                 },
                 {
-                    date: '24-03-2023',
-                    day: 'Friday',
+                    date: '2023/03/25',
                     shehri_time: '4:42',
                     iftar_time: '6:11',
                 },
@@ -61,7 +59,7 @@ export default {
             //ordinal suffix code 
             var number = looseIndexOf(this.schedules, item) + 1
             if (typeof number !== "number" || number < 1) return number.toString();
-console.log(new Date('24/03/2023').getDate())
+            
             const lastDigit = number % 10;
             const lastTwoDigits = number % 100;
 
@@ -76,6 +74,12 @@ console.log(new Date('24/03/2023').getDate())
             } else {
                 return number + "th";
             }
+        },
+        getWeekDayName(item) {
+            const date = new Date(item.date); // create a date object
+            const options = { weekday: 'long' }; // set options to get the weekday name
+            const dayName = date.toLocaleString('en-US', options); // get the day name as a string
+            return dayName
         }
     }
 }
