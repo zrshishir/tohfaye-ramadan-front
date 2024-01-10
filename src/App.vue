@@ -4,6 +4,6 @@
 </script>
 
 <template>
-  <!-- <Loading/> -->
+  <Loading/>
   <HomeScreen/>
 </template>
