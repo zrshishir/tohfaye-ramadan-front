@@ -1,0 +1,26 @@
+@import './base.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+#app {
+  max-width: 1280px;
+  height: 100vh;
+  margin: 0 auto;
+  font-weight: normal;
+}
+
+@keyframes dot {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+}
+
+.dot {
+  animation: dot 1s infinite;
+}
