@@ -13,7 +13,8 @@ export default {
         'white': '#FFFFFF',
         'cultured': '#F5F5F5',
         'lightWhite': '#FFFFFF80',
-        'chocolate': '#450029d1'
+        'chocolate': '#450029d1',
+        'green': '#008000'
       },
     },
   },
