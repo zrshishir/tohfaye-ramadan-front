@@ -146,42 +146,42 @@
     <div class="namaj-options pt-7 grid grid-cols-3 gap-5 gap-y-10">
       <RouterLink to="/salar-schedule" class="option flex flex-col items-center justify-center">
         <img class="w-7 h-7 object-contain object-center" src="../assets/images/icons/mosque.svg" alt="mosque">
-        <p class="pt-2 font-light">Salar Schedule</p>
+        <p class="pt-2 font-light text-center">Salar Schedule</p>
       </RouterLink>
       <RouterLink to="/al-quraan" class="option flex flex-col items-center justify-center">
         <img class="w-7 h-7 object-contain object-center" src="../assets/images/icons/quraan.svg" alt="mosque">
-        <p class="pt-2 font-light">Al-Quraan</p>
+        <p class="pt-2 font-light text-center">Al-Quraan</p>
       </RouterLink>
       <RouterLink to="/sahree-iftar" class="option flex flex-col items-center justify-center">
         <img class="w-7 h-7 object-contain object-center" src="../assets/images/icons/moon.svg" alt="mosque">
-        <p class="pt-2 font-light">Sahree - Iftar</p>
+        <p class="pt-2 font-light text-center">Sahree - Iftar</p>
       </RouterLink>
       <RouterLink to="/tasbih" class="option flex flex-col items-center justify-center">
         <img class="w-7 h-7 object-contain object-center" src="../assets/images/icons/tasbih.svg" alt="mosque">
-        <p class="pt-2 font-light">Tasbih</p>
+        <p class="pt-2 font-light text-center">Tasbih</p>
       </RouterLink>
       <RouterLink to="/kibla-compass" class="option flex flex-col items-center justify-center">
         <img class="w-7 h-7 object-contain object-center" src="../assets/images/icons/teenyicons_compass.svg" alt="mosque">
-        <p class="pt-2 font-light">Kibla Compass</p>
+        <p class="pt-2 font-light text-center">Kibla Compass</p>
       </RouterLink>
       <RouterLink to="/asma-ul-husna" class="option flex flex-col items-center justify-center">
         <img class="w-7 h-7 object-contain object-center" src="../assets/images/icons/asma-ul-husna.png" alt="mosque">
-        <p class="pt-2 font-light">Asma-Ul-Husna</p>
+        <p class="pt-2 font-light text-center">Asma-Ul-Husna</p>
       </RouterLink>
     </div>
     <!-- Prohibited Times -->
     <div class="prohibited-times mt-5 px-6 py-6 border border-solid border-primary rounded-lg">
       <h3 class="font-black text-base text-center mb-10">Today's Probable Prohibited Times</h3>
       <div class="times border-b border-cultured">
-        <p class="text-sm flex items-center justify-between pb-3">
+        <p class="text-sm flex items-center justify-between flex-wrap pb-3">
           <span>Prohibited time (morning)</span>
           <span>5:19 AM - 5:33 AM</span>
         </p>
-        <p class="text-sm flex items-center justify-between pb-3">
+        <p class="text-sm flex items-center justify-between flex-wrap pb-3">
           <span>Prohibited time (Noon)</span>
           <span>11:52 AM - 12:06 PM</span>
         </p>
-        <p class="text-sm flex items-center justify-between pb-3">
+        <p class="text-sm flex items-center justify-between flex-wrap pb-3">
           <span>Prohibited time (Evening)</span>
           <span>6:39 PM - 6:53 PM</span>
         </p>
