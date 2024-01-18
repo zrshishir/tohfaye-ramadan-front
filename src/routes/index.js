@@ -10,6 +10,7 @@ import AsmaUlHusnaVue from "@/screens/AsmaUlHusna.vue";
 import KiblaCompassVue from '@/screens/KiblaCompass.vue';
 import SalatTimesVue from '@/screens/time/SalatTimes.vue';
 import SalarScheduleVue from '@/screens/SalarSchedule.vue';
+import TomorrowTimesVue from '@/screens/time/TomorrowTimes.vue';
 
 const routes = [
   { path: '/', component: HomeVue },
@@ -17,8 +18,9 @@ const routes = [
     path: '/time', 
     component: TimeVue,
     children: [
+      { path: 'next-salat', component: SalatTimesVue },
       { path: 'present-time', component: SalatTimesVue },
-      { path: 'next-salat', component: SalatTimesVue }
+      { path: 'tomorrow-salat', component: TomorrowTimesVue }
     ],
   },
   { path: '/tasbih', component: TasbihVue },

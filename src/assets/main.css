@@ -24,3 +24,13 @@
 .dot {
   animation: dot 1s infinite;
 }
+
+.select-input {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url('../assets/images/icons/down-arrow.svg');
+  background-repeat: no-repeat;
+  background-position: right 11px center;
+  padding-right: 30px;
+}

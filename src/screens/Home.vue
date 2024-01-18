@@ -10,14 +10,7 @@
     },
     data() {
         return {
-          time: new Date().toLocaleTimeString(
-            'en-US',
-            { 
-              hour12: true, 
-              hour: 'numeric', 
-              minute: 'numeric'
-            }
-          ),
+          time: new Date().toLocaleTimeString( 'en-US', { hour12: true, hour: 'numeric', minute: 'numeric' }),
           loading: false,
           calendar: [],
           timeDifference: '',
@@ -26,15 +19,18 @@
     methods: {
       salatTimeHandler(title) {
         switch (title) {
-          case 'present':
-              this.$router.push({ path: '/time/present-time' });
-              break;
           case 'next':
-              this.$router.push({ path: '/time/next-salat' });
-              break;
+            this.$router.push({ path: '/time/next-salat' });
+          break;
+          case 'present':
+            this.$router.push({ path: '/time/present-time' });
+          break;
+          case 'tomorrow':
+            this.$router.push({ path: '/time/tomorrow-salat' });
+          break;
           default:
-              this.$router.push('/');
-              break;
+            this.$router.push('/');
+          break;
       }
     },
     async fetchCalenderData() {
@@ -124,7 +120,7 @@
     </div>
 
     <!-- Tomorrow Schedule Start -->
-    <div class="tomorrow-schedule bg-primary mt-3 h-28 relative rounded-2xl overflow-auto">
+    <div @click="salatTimeHandler('tomorrow')" class="tomorrow-schedule bg-primary mt-3 h-28 relative rounded-2xl overflow-auto">
       <div class="salat-content w-full px-6 py-3 text-white absolute top-0 left-0 z-10">
         <h3 class="pb-3 text-base font-normal text-center">Tomorrow’s Schedule</h3>
         <div class="schedule-contant flex items-center justify-between gap-6">
