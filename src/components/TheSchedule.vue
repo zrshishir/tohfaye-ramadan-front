@@ -1,6 +1,11 @@
 <script>
+  import { RouterLink } from 'vue-router';
   export default {
-
+    computed: {
+      showButtonHandler() {
+        return this.$route.path !== '/time/upcoming-time';
+      }
+    }
   }
 </script>
 
@@ -45,6 +50,6 @@
         <p class="text-base">01:30 am - 05:27 am</p>
       </div>
     </div>
-    <button class="px-8 py-3 mb-5 bg-primary text-white rounded-full">Next 7 Days</button>
+    <RouterLink v-if="showButtonHandler" to="/time/upcoming-time" class="inline-block px-8 py-3 mb-5 bg-primary text-white rounded-full">Next 7 Days</RouterLink>
   </div>
 </template>

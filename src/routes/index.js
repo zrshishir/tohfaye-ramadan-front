@@ -10,6 +10,7 @@ import AsmaUlHusnaVue from "@/screens/AsmaUlHusna.vue";
 import KiblaCompassVue from '@/screens/KiblaCompass.vue';
 import SalatTimesVue from '@/screens/time/SalatTimes.vue';
 import SalarScheduleVue from '@/screens/SalarSchedule.vue';
+import UpComingTimeVue from '@/screens/time/UpComingTime.vue';
 import TomorrowTimesVue from '@/screens/time/TomorrowTimes.vue';
 
 const routes = [
@@ -20,7 +21,8 @@ const routes = [
     children: [
       { path: 'next-salat', component: SalatTimesVue },
       { path: 'present-time', component: SalatTimesVue },
-      { path: 'tomorrow-salat', component: TomorrowTimesVue }
+      { path: 'tomorrow-salat', component: TomorrowTimesVue },
+      { path: 'upcoming-time', component: UpComingTimeVue },
     ],
   },
   { path: '/tasbih', component: TasbihVue },
@@ -35,6 +37,14 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+});
+
+router.beforeEach((to, from, next) => {
+  // If navigating to /time/upcoming-time, scroll to the top
+  if (to.path) {
+    window.scrollTo(0, 0);
+  }
+  next();
 });
 
 

@@ -5,7 +5,7 @@
     ],
     methods: {
       backHandler(){
-        this.$router.go(-1);
+        this.$route.path === '/time/upcoming-time' ? this.$router.go(-2) : this.$router.go(-1);
       }
     }
   }
