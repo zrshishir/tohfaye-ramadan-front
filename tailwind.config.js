@@ -14,6 +14,9 @@ export default {
         'cultured': '#F5F5F5',
         'lightWhite': '#FFFFFF80',
       },
+      backgroundImage: {
+        'tasbih': "url('../assets/images/tasbih-bg.png')",
+      },
     },
   },
   plugins: [],

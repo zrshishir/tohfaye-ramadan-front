@@ -40,7 +40,7 @@
         .then((response) => {
           setTimeout(() => {
             this.loading = false;
-            this.calendar = response.data?.data?.data;
+            this.calendar = response.data?.data?.permanent_calendars;
           }, 1000);
         })
         .catch((error) => {
@@ -63,9 +63,8 @@
 </script>
 
 <template>
-  <!-- <Loading v-if="loading"/> -->
-  <!-- v-if="!loading" -->
-  <div  class="home-screen p-4">
+  <Loading v-if="loading"/>
+  <div v-if="!loading" class="home-screen p-4">
     <header>
       <div class="header-area mt-5 flex items-center justify-between">
         <p class="font-medium text-base	">Salat Schedule - Bangladesh</p>
