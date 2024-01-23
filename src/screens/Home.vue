@@ -9,6 +9,9 @@
   import TomorrowSchedule from '@/components/home/TomorrowSchedule.vue';
   import ProhibitedTimes from '@/components/home/ProhibitedTimes.vue';
 
+  // new Date().toLocaleDateString('en-US', { timeZone: 'Asia/Dhaka', day: 'numeric', month: 'long', year: 'numeric' })
+  // new Date().toLocaleTimeString( 'en-US', { timeZone: 'Asia/Dhaka', hour12: true, hour: 'numeric', minute: 'numeric' })
+
   export default {
     components: {
       Loading,
@@ -18,32 +21,41 @@
       NextSalat,
       TomorrowSchedule,
       ProhibitedTimes,
-      SocialMedia
+      SocialMedia,
+      Loading
     },
     data() {
       return {
         calendar: [],
         loading: false,
-        time: new Date().toLocaleTimeString( 'en-US', { timeZone: 'Asia/Dhaka', hour12: true, hour: 'numeric', minute: 'numeric' }),
-        currentDate: new Date().toLocaleDateString('en-US', { timeZone: 'Asia/Dhaka', day: 'numeric', month: 'long', year: 'numeric' }),
+        currentTime: new Date().getTime(),
+        storedData: localStorage.getItem('calendarData'),
+        storedTimestamp: localStorage.getItem('calendarTimestamp'),
       };
     },
     methods: {      
       async fetchCalenderData() {
         this.loading = true;
-        axios.get(`${import.meta.env.VITE_BASE_URL}/permanent-calendar`)
-        .then((response) => {
-          setTimeout(() => {
-            this.loading = false;
-            this.calendar = response.data?.data?.permanent_calendars;
-          }, 1000);
-        })
-        .catch((error) => {
+        
+        if (this.storedData && this.storedTimestamp && (this.currentTime - parseInt(this.storedTimestamp) < 24 * 60 * 60 * 1000)) {
+          this.calendar = JSON.parse(this.storedData);
           this.loading = false;
-          console.error('Error fetching data:', error);
-        });      
+        } else {
+          try {
+            const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/permanent-calendar`);
+            this.calendar = response.data?.data?.permanent_calendars;
+            
+            localStorage.setItem('calendarData', JSON.stringify(this.calendar));
+            localStorage.setItem('calendarTimestamp', this.currentTime.toString());
+          } catch (error) {
+            this.loading = false;
+            console.error('Error fetching data:', error);
+          } finally {
+            this.loading = false;
+          }
+        }
       }
-    },  
+    },   
     mounted() {
       this.fetchCalenderData();
     },
@@ -51,7 +63,7 @@
 </script>
 
 <template>
-  <Loading v-if="loading"/>
+  <Loading v-if="loading" />
   <div v-if="!loading" class="home-screen p-4">
     <HeaderArea/>
     <PresentSalat/>

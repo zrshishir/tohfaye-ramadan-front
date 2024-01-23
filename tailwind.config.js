@@ -17,6 +17,9 @@ export default {
       backgroundImage: {
         'tasbih': "url('../assets/images/tasbih-bg.png')",
       },
+      boxShadow: {
+        '3xl': '1px 1px 7px 0px rgb(0 0 0 / 0.25)',
+      }
     },
   },
   plugins: [],
