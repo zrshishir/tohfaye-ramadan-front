@@ -25,7 +25,7 @@
         </div>
         <p class="text-lg font-medium">{{ present.start_time }} - {{ present.end_time }}</p>
       </div>
-      <p class="my-2 text-base font-light">Time left: {{ time.hours }} hours {{ time.minutes }} minutes</p>
+      <p class="my-2 text-base font-light">Time left: {{ time.hours }} hours {{ time.minutes <= 9 && "0" }}{{ time.minutes }} minutes</p>
       <div class="time-slides relative">
         <div class="slide absolute top-0 left-0 w-full h-1 bg-lightWhite rounded-full"></div>
         <div class="slide absolute top-0 left-0 w-2/4 h-1 bg-white rounded-full"></div>

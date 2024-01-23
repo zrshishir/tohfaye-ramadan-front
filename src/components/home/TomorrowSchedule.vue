@@ -1,9 +1,42 @@
 <script>
   export default {
+    props: [
+      'tomorrow'
+    ],
+    data() {
+      return {
+        intervalId: null,
+        timeDifference: { hours: 0, minutes: 0 },
+      };
+    },
+    created(){
+      this.calculateTimeDifference();
+
+      this.intervalId = setInterval(() => {
+        this.currentDate = new Date();
+        this.calculateTimeDifference();
+      }, 60000);
+    },
+    beforeDestroy() {
+      clearInterval(this.intervalId);
+    },
     methods: {
       clickHandler() {
         this.$router.push({ path: '/time/tomorrow-salat' });
-      }
+      },
+      calculateTimeDifference() {
+        const currentTime = new Date();
+        const tomorrowDate = new Date(currentTime);
+        tomorrowDate.setDate(currentTime.getDate() + 1);
+
+        const targetTime = new Date( tomorrowDate.getFullYear(), tomorrowDate.getMonth(), tomorrowDate.getDate(), 3, 16);
+        const timeDifference = targetTime - currentTime;
+
+        const hours = Math.floor(timeDifference / 3600000);
+        const minutes = Math.floor((timeDifference % 3600000) / 60000);
+
+        this.timeDifference = { hours, minutes };
+      },
     }
   }
 </script>
@@ -16,16 +49,16 @@
         <div class="time flex-1">
           <p class="flex items-center justify-between">
             <span class="font-light">Sahri is over</span>
-            <span>05.00 AM</span>
+            <span>{{ tomorrow.sehri.end_time }}</span>
           </p>
           <p class="flex items-center justify-between">
             <span class="font-light">Iftal</span>
-            <span>05.00 AM</span>
+            <span>{{ tomorrow.ifter.start_time }}</span>
           </p>
         </div>
         <div class="next text-center">
           <p class="text-sm font-light">Next Sahri is after</p>
-          <p class="text-sm font-light">6 hours 46 minutes</p>
+          <p class="text-sm font-light">{{ timeDifference.hours }} hours {{ timeDifference.minutes }} minutes</p>
         </div>
       </div>
     </div>
