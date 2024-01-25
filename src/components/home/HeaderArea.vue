@@ -16,7 +16,7 @@
     </div>
   </header>
   <!-- Calender Start -->
-  <div class="calender mt-6 flex items-center justify-between">
+  <div class="calender my-6 flex items-center justify-between">
     <div class="date">
       <div class="arabic-date flex items-center gap-3 pb-1">
         <p class="text-base font-medium">8 Jilhazz 1444</p>

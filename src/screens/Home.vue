@@ -29,12 +29,12 @@
           {
             "id": 1,
             "month_id": 1,
-            "day": "23",
-            "fazr": "{\"text_ar\": \"فجر\", \"text_bn\": \"ফজর\", \"text_en\": \"Fazr\", \"end_time\": \"12:08 PM\", \"start_time\": \"05:23 AM\"}",
+            "day": "25",
+            "fazr": "{\"text_ar\": \"فجر\", \"text_bn\": \"ফজর\", \"text_en\": \"Fazr\", \"end_time\": \"06:08 AM\", \"start_time\": \"05:23 AM\"}",
             "johr": "{\"text_ar\": \"جوهر\", \"text_bn\": \"জোহর\", \"text_en\": \"Johr\", \"end_time\": \"03:00 PM\", \"start_time\": \"12:09 PM\"}",
             "asr": "{\"text_ar\": \"عصر\", \"text_bn\": \"আসর\", \"text_en\": \"Asr\", \"end_time\": \"05:30 PM\", \"start_time\": \"04:01 PM\"}",
             "magrib": "{\"text_ar\": \"مغرب\", \"text_bn\": \"মাগরিব\", \"text_en\": \"Magrib\", \"end_time\": \"06:30 PM\", \"start_time\": \"05:37 PM\"}",
-            "esha": "{\"text_ar\": \"عشاء\", \"text_bn\": \"ঈশা\", \"text_en\": \"Esha\", \"end_time\": \"11:59 PM\", \"start_time\": \"06:56 PM\"}",
+            "esha": "{\"text_ar\": \"عشاء\", \"text_bn\": \"ঈশা\", \"text_en\": \"Esha\", \"end_time\": \"09:13 PM\", \"start_time\": \"06:56 PM\"}",
             "tahazzud": "{\"text_ar\": \"تهجد\", \"text_bn\": \"তাহাজ্জুদ\", \"text_en\": \"Tahazzud\", \"end_time\": \"04:20 AM\", \"start_time\": \"12:00 AM\"}",
             "sehri": "{\"text_ar\": \"سحري\", \"text_bn\": \"সেহরী\", \"text_en\": \"Sehri\", \"end_time\": \"03:16 AM\", \"start_time\": \"04:16 AM\"}",
             "sunrise": "{\"text_ar\": \"شروق الشمس\", \"text_bn\": \"সূর্যোদয়\", \"text_en\": \"Sunrise\", \"end_time\": \"05:16 AM\", \"start_time\": \"05:16 AM\"}",
@@ -46,7 +46,7 @@
           {
             "id": 1,
             "month_id": 1,
-            "day": "24",
+            "day": "26",
             "fazr": "{\"text_ar\": \"فجر\", \"text_bn\": \"ফজর\", \"text_en\": \"Fazr\", \"end_time\": \"12:08 PM\", \"start_time\": \"05:23 AM\"}",
             "johr": "{\"text_ar\": \"جوهر\", \"text_bn\": \"জোহর\", \"text_en\": \"Johr\", \"end_time\": \"03:00 PM\", \"start_time\": \"12:09 PM\"}",
             "asr": "{\"text_ar\": \"عصر\", \"text_bn\": \"আসর\", \"text_en\": \"Asr\", \"end_time\": \"05:30 PM\", \"start_time\": \"04:01 PM\"}",
@@ -115,11 +115,12 @@
           for (let prayer in this.time[0]) {
             if (this.time[0].hasOwnProperty(prayer) && prayer !== "day" && prayer !== "id" && prayer !== "month_id" && this.time[0][prayer]) {
               let prayerTime = JSON.parse(this.time[0][prayer]);
-              
               if ( this.parseTime(currentTime) >= this.parseTime(prayerTime.start_time) && this.parseTime(currentTime) <= this.parseTime(prayerTime.end_time)) {
                 this.presentSalat = JSON.parse(this.time[0][prayer]);
                 foundCurrentPrayer = true;
-              } else if (foundCurrentPrayer) {
+              } else if (this.parseTime(currentTime) <= this.parseTime(prayerTime.end_time) === false) {
+                foundCurrentPrayer = true;                
+              }else if (foundCurrentPrayer) {
                 this.nextSalat = JSON.parse(this.time[0][prayer]);
                 break;
               }
