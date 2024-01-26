@@ -10,5 +10,7 @@
 
 <template>
   <TheHeader title="Al-Quraan"/>
-  <h1>Al Quraan Surah </h1>
+  <div class="tasbih-area px-5 py-4">
+    
+  </div>
 </template>

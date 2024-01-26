@@ -3,15 +3,15 @@ import { createRouter, createWebHistory } from 'vue-router';
 import HomeVue from "@/screens/Home.vue";
 import TasbihVue from '@/screens/Tasbih.vue';
 import TimeVue from '@/screens/time/index.vue';
-import AlQuraanVue from "@/screens/AlQuraan.vue";
 import AlQuraan from "@/screens/alquraan/index.vue";
-import LocationVue from '@/screens/Location.vue';
 import SahreeIftarVue from '@/screens/SahreeIftar.vue';
 import AsmaUlHusnaVue from "@/screens/AsmaUlHusna.vue";
 import KiblaCompassVue from '@/screens/KiblaCompass.vue';
+import AllSurahVue from "@/screens/alquraan/AllSurah.vue";
 import SalatTimesVue from '@/screens/time/SalatTimes.vue';
 import SalarScheduleVue from '@/screens/SalarSchedule.vue';
 import UpComingTimeVue from '@/screens/time/UpComingTime.vue';
+import SingleSurahVue from "@/screens/alquraan/SingleSurah.vue";
 import TomorrowTimesVue from '@/screens/time/TomorrowTimes.vue';
 
 const routes = [
@@ -27,12 +27,12 @@ const routes = [
     ],
   },
   { path: '/tasbih', component: TasbihVue },
-  { path: '/loaction', component: LocationVue },
   { 
     path: '/al-quraan', 
     component: AlQuraan,
     children: [
-      { path: ':id', component: AlQuraanVue }
+      { path: '', name: 'al-quraan', component: AllSurahVue },
+      { path: ':id', component: SingleSurahVue }
     ],
   },
   { path: '/sahree-iftar', component: SahreeIftarVue },
