@@ -16,6 +16,8 @@ export default {
       },
       backgroundImage: {
         'tasbih': "url('../assets/images/tasbih-bg.png')",
+        'union': "url('../assets/images/Union.png')",
+        'ayat': "url('../assets/images/ayat.png')",
       },
       boxShadow: {
         '3xl': '1px 1px 7px 0px rgb(0 0 0 / 0.25)',

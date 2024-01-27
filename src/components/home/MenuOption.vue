@@ -9,13 +9,13 @@
 <template>
   
   <div class="namaj-options pt-7 grid grid-cols-3 gap-5 gap-y-10">
-    <RouterLink to="/salar-schedule" class="option flex flex-col items-center justify-center">
-      <img class="w-7 h-7 object-contain object-center" src="@/assets/images/icons/mosque.svg" alt="mosque">
-      <p class="pt-2 font-light text-center">Salar Schedule</p>
-    </RouterLink>
     <RouterLink to="/al-quraan" class="option flex flex-col items-center justify-center">
       <img class="w-7 h-7 object-contain object-center" src="@/assets/images/icons/quraan.svg" alt="mosque">
       <p class="pt-2 font-light text-center">Al-Quraan</p>
+    </RouterLink>
+    <RouterLink to="/salar-schedule" class="option flex flex-col items-center justify-center">
+      <img class="w-7 h-7 object-contain object-center" src="@/assets/images/icons/dua.svg" alt="mosque">
+      <p class="pt-2 font-light text-center">Duas</p>
     </RouterLink>
     <RouterLink to="/sahree-iftar" class="option flex flex-col items-center justify-center">
       <img class="w-7 h-7 object-contain object-center" src="@/assets/images/icons/moon.svg" alt="mosque">
