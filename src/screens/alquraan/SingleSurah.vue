@@ -9,7 +9,7 @@
 </script>
 
 <template>
-  <the-header title="Al-Quraan">
+  <the-header title="Al-Fatiha (الفاتحة)">
     <div class="description">
       <span class="text-primary font-semibold">Makki | Verses : 7</span>
     </div>

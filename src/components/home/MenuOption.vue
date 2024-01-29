@@ -13,7 +13,7 @@
       <img class="w-7 h-7 object-contain object-center" src="@/assets/images/icons/quraan.svg" alt="mosque">
       <p class="pt-2 font-light text-center">Al-Quraan</p>
     </RouterLink>
-    <RouterLink to="/salar-schedule" class="option flex flex-col items-center justify-center">
+    <RouterLink to="/duas" class="option flex flex-col items-center justify-center">
       <img class="w-7 h-7 object-contain object-center" src="@/assets/images/icons/dua.svg" alt="mosque">
       <p class="pt-2 font-light text-center">Duas</p>
     </RouterLink>

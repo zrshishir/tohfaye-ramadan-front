@@ -34,3 +34,81 @@
   background-position: right 11px center;
   padding-right: 30px;
 }
+
+.tasbih-button {
+  background: none;
+  border: none;
+}
+
+.tasbih-button .bloom-container {
+  position: relative;
+  transition: all 0.2s ease-in-out;
+  border: none;
+  background: none;
+}
+
+.tasbih-button .bloom-container .tasbih-button-container-main {
+  width: 70px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  overflow: hidden;
+  position: relative;
+  display: grid;
+  place-content: center;
+  transform: rotate(-45deg);
+  transition: all 0.5s ease-in-out;
+}
+
+.tasbih-button .bloom-container .tasbih-button-container-main .tasbih-button-inner {
+  height: 60px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  position: relative;
+  transition: all 0.5s ease-in-out;
+}
+
+.tasbih-button .bloom-container .tasbih-button-container-main .tasbih-button-inner .back {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(60deg, rgb(0 128 0) 0%, rgb(193 224 193) 100%);
+}
+
+.tasbih-button .bloom-container .tasbih-button-container-main .tasbih-button-inner .front {
+  position: absolute;
+  inset: 5px;
+  border-radius: 50%;
+  background: linear-gradient(60deg, rgb(193 224 193) 0%, rgb(72 164 72) 100%);
+  display: grid;
+  place-content: center;
+}
+
+.tasbih-button .bloom-container .tasbih-button-container-main .tasbih-button-inner .front .svg {
+  fill: #ffffff;
+  opacity: 0.5;
+  width: 30px;
+  aspect-ratio: 1;
+  transform: rotate(45deg);
+  transition: all 0.2s ease-in;
+}
+
+.tasbih-button .bloom-container:hover {
+  transform: scale(1.1);
+}
+
+.tasbih-button .bloom-container:hover .tasbih-button-container-main .tasbih-button-glass {
+  transform: translate(0%, -40%);
+}
+
+.tasbih-button .bloom-container:hover .tasbih-button-container-main .tasbih-button-inner .front .svg {
+  opacity: 1;
+  filter: drop-shadow(0 0 10px white);
+}
+
+.tasbih-button .bloom-container:active {
+  transform: scale(0.7);
+}
+
+.tasbih-button .bloom-container:active .tasbih-button-container-main .tasbih-button-inner {
+  transform: scale(1.2);
+}
