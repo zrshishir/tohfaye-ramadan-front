@@ -58,12 +58,10 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  // If navigating to /time/upcoming-time, scroll to the top
   if (to.path) {
     window.scrollTo(0, 0);
   }
   next();
 });
-
 
 export default router;
