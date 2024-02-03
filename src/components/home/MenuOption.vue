@@ -17,7 +17,7 @@
       <img class="w-7 h-7 object-contain object-center" src="@/assets/images/icons/dua.svg" alt="mosque">
       <p class="pt-2 text-center">Dua</p>
     </RouterLink>
-    <RouterLink to="/sahree-iftar" class="option flex flex-col items-center justify-center">
+    <RouterLink to="/ramadan" class="option flex flex-col items-center justify-center">
       <img class="w-7 h-7 object-contain object-center" src="@/assets/images/icons/moon.svg" alt="mosque">
       <p class="pt-2 text-center">Ramadan</p>
     </RouterLink>

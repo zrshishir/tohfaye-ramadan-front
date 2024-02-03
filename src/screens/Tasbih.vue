@@ -112,7 +112,7 @@
         </div>
         <div class="tasbih-right p-1">
           <div class="right-count text-primary mb-3">
-            <h3 class="text-lg"><span class="text-4xl">{{ tasbih.count }}</span>/{{ tasbih.reset_on }}</h3>
+            <h3 class="text-lg"><span class="text-4xl">{{ tasbih.count }}</span>{{ tasbih.reset_on ? `/${tasbih.reset_on}` : '' }}</h3>
             <p class="text-xs">Today: {{ tasbih.today_count }}</p>
           </div>
           <button class="tasbih-button" @click="counterHandler(tasbih)">

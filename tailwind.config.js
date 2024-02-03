@@ -13,6 +13,7 @@ export default {
         'white': '#FFFFFF',
         'cultured': '#F5F5F5',
         'lightWhite': '#FFFFFF80',
+        'gainsboro': '#DDDDDD',
       },
       backgroundImage: {
         'tasbih': "url('../assets/images/tasbih-bg.png')",

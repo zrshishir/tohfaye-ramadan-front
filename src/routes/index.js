@@ -5,8 +5,8 @@ import Duas from "@/screens/duas/index.vue";
 import TasbihVue from '@/screens/Tasbih.vue';
 import TimeVue from '@/screens/time/index.vue';
 import AlQuraan from "@/screens/alquraan/index.vue";
+import RamadanVue from '@/screens/ramadan/index.vue';
 import CategoryVue from '@/screens/duas/Category.vue';
-import SahreeIftarVue from '@/screens/SahreeIftar.vue';
 import AsmaUlHusnaVue from "@/screens/AsmaUlHusna.vue";
 import KiblaCompassVue from '@/screens/KiblaCompass.vue';
 import AllSurahVue from "@/screens/alquraan/AllSurah.vue";
@@ -16,6 +16,8 @@ import UpComingTimeVue from '@/screens/time/UpComingTime.vue';
 import CategoryDuasVue from '@/screens/duas/CategoryDuas.vue';
 import SingleSurahVue from "@/screens/alquraan/SingleSurah.vue";
 import TomorrowTimesVue from '@/screens/time/TomorrowTimes.vue';
+import CalendarVue from '@/screens/ramadan/Calendar.vue';
+import SingleDateVue from '@/screens/ramadan/SingleDate.vue';
 
 const routes = [
   { path: '/', component: HomeVue },
@@ -47,7 +49,14 @@ const routes = [
       { path: ':id', component: SingleDuasVue }
     ],
   },
-  { path: '/sahree-iftar', component: SahreeIftarVue },
+  { 
+    path: '/ramadan', 
+    component: RamadanVue,
+    children: [
+      { path: '', name: 'ramadan', component: CalendarVue },
+      { path: ':id', component: SingleDateVue },
+    ],
+  },
   { path: '/asma-ul-husna', component: AsmaUlHusnaVue },
   { path: '/kibla-compass', component: KiblaCompassVue },
 ];

@@ -112,3 +112,12 @@
 .tasbih-button .bloom-container:active .tasbih-button-container-main .tasbih-button-inner {
   transform: scale(1.2);
 }
+
+.current-ramadan {
+  background: #008000;
+}
+
+.current-ramadan div {
+  border-right: 0px;
+  color: #ffffff;
+}
