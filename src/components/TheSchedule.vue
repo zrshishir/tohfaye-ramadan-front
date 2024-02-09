@@ -25,6 +25,7 @@
             this.prayers.push(prayerTime);
           }
         }
+        console.log(this.times);
       },
     },
     created(){

@@ -26,6 +26,7 @@
           try {
             const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/asmaul-husna`);
             if (response.statusText === 'OK') {
+              this.asmaulhusna = response.data?.data;
               localStorage.setItem('Asma-Ul-Husna', JSON.stringify(response.data?.data));
             }
           } catch (error) {

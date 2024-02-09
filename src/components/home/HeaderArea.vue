@@ -2,9 +2,42 @@
   export default {
     data() {
       return {
+        location: null,
+        storedLocation: localStorage.getItem('location'),
         currentDate: new Date().toLocaleDateString('en-US', { timeZone: 'Asia/Dhaka', day: 'numeric', month: 'long', year: 'numeric' }),
       };
     },
+    methods: {
+      getUserLocation() {
+        navigator.geolocation.getCurrentPosition(async (position) => {
+          const { latitude, longitude } = position.coords;
+
+          if (this.storedLocation) {
+            this.location = JSON.parse(this.storedLocation);
+          } else {
+            try {
+              const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${import.meta.env.VITE_BASE_KEY}`);
+              const data = await response.json();
+  
+              console.log(data);
+  
+              if (data.results && data.results.length > 0) {
+                const city = data.results[0].address_components.find(component => component.types.includes('locality')).long_name;
+                const division = data.results[0].address_components.find(component => component.types.includes('administrative_area_level_1')).long_name;
+                this.location = { lat: latitude, lng: longitude, city, division };
+                localStorage.setItem('location', JSON.stringify(this.location));
+              }
+            } catch (error) {
+              console.error('Error fetching city:', error);
+            }            
+          }
+
+        });
+      },
+    },
+    mounted() {
+      this.getUserLocation();
+    }
   }
 </script>
 
@@ -29,7 +62,7 @@
         <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
         <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
       </svg>
-      <span class="text-sm font-normal">Pabna</span>
+      <span class="text-sm font-normal">{{ location?.city }}</span>
     </div>
   </div>
 </template>
