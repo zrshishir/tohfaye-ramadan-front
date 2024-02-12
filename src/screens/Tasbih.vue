@@ -10,25 +10,33 @@
   },
     data(){
       return {
-        loading: false,
-        tasbihs: null,
         counter: 0,
+        tasbihs: [],
+        loading: false,
+        storedTasbihs: localStorage.getItem('tasbih'),
       }
     },
     methods: {
       async fetchTasbihs() {
         this.loading = true;
-        axios.get(`${import.meta.env.VITE_BASE_URL}/tasbih`)
-        .then(response => {
-          setTimeout(() => {
-            this.loading = false;
-            this.tasbihs = JSON.parse(response?.data?.data?.tasbih);
-          }, 1000);
-        })
-        .catch(error => {
+
+        if (this.storedTasbihs) {
+          this.tasbihs = JSON.parse(this.storedTasbihs);
           this.loading = false;
-          console.error('Error fetching data:', error);
-        });
+        } else {
+          try {
+            const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/tasbih`);
+            if (response.statusText === 'OK') {
+              this.tasbihs = JSON.parse(response.data?.data?.tasbih);
+              localStorage.setItem('tasbih', response.data?.data?.tasbih);
+            }
+          } catch (error) {
+            this.loading = false;
+            console.error('Error fetching data:', error);
+          } finally {
+            this.loading = false;
+          }
+        }
       },
       counterHandler(tasbih) {
         const currentTime = Date.now();
@@ -92,28 +100,28 @@
     <div class="tasbih-area px-5 py-4">
       <div v-for="(tasbih, index) in tasbihs" :key="index" class="tasbih mb-3 p-3 border-2 border-primary rounded-3xl flex items-center justify-between gap-3 bg-tasbih bg-cover bg-center bg-no-repeat">
         <div class="tasbih-content flex-1 text-center">
-          <h3 class="text-3xl">{{ tasbih.text_ar }}</h3>
-          <p class="text-base py-1">{{ tasbih.text_en }}</p>
-          <p>{{ tasbih.text_bn }}</p>
+          <h3 class="text-3xl">{{ tasbih?.text_ar }}</h3>
+          <p class="text-base py-1">{{ tasbih?.text_en }}</p>
+          <p>{{ tasbih?.text_bn }}</p>
           <div class="counts mt-2 grid grid-cols-3 gap-1 text-sm">
             <div class="count">
               <p>Monthly</p>
-              <p>{{ tasbih.monthly_count }}</p>
+              <p>{{ tasbih?.monthly_count }}</p>
             </div>
             <div class="count">
               <p>Yearly</p>
-              <p>{{ tasbih.yearly_count }}</p>
+              <p>{{ tasbih?.yearly_count }}</p>
             </div>
             <div class="count">
               <p>Total</p>
-              <p>{{ tasbih.total_count }}</p>
+              <p>{{ tasbih?.total_count }}</p>
             </div>
           </div>
         </div>
         <div class="tasbih-right p-1">
           <div class="right-count text-primary mb-3">
-            <h3 class="text-lg"><span class="text-4xl">{{ tasbih.count }}</span>{{ tasbih.reset_on ? `/${tasbih.reset_on}` : '' }}</h3>
-            <p class="text-xs">Today: {{ tasbih.today_count }}</p>
+            <h3 class="text-lg"><span class="text-4xl">{{ tasbih?.count }}</span>{{ tasbih?.reset_on ? `/${tasbih?.reset_on}` : '' }}</h3>
+            <p class="text-xs">Today: {{ tasbih?.today_count }}</p>
           </div>
           <button class="tasbih-button" @click="counterHandler(tasbih)">
             <div class="bloom-container">

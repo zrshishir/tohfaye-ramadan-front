@@ -1,11 +1,10 @@
 <script>
+  import { RouterLink } from 'vue-router';
   import TheHeader from '@/components/TheHeader.vue';
-  import TheSchedule from '@/components/TheSchedule.vue';
 
   export default {
     components: {
       TheHeader,
-      TheSchedule
     },
     data(){
       return {
@@ -29,7 +28,7 @@
       },
       getCurrentPrayerTime() {
         for (let prayer in this.time) {
-          if (this.time.hasOwnProperty(prayer) && prayer !== "day" && prayer !== "id" && prayer !== "month_id" && prayer !== "created_at" && prayer !== "updated_at") {
+          if (this.time.hasOwnProperty(prayer) && prayer !== "day" && prayer !== "id" && prayer !== "month_id" && prayer !== "created_at" && prayer !== "updated_at"  && prayer !== "forbidden") {
             this.prayers.push(this.time[prayer]);
           }
         }
