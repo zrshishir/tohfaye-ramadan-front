@@ -2,16 +2,19 @@
   import axios from 'axios';
   import TheHeader from '@/components/TheHeader.vue';
   import TheLoading from '@/components/TheLoading.vue';
+  import TheError from '@/components/TheError.vue';
 
   export default {
     components: {
     TheHeader,
-    TheLoading
+    TheLoading,
+    TheError
   },
     data(){
       return {
         counter: 0,
         tasbihs: [],
+        error: false,
         loading: false,
         storedTasbihs: localStorage.getItem('tasbih'),
       }
@@ -23,18 +26,20 @@
         if (this.storedTasbihs) {
           this.tasbihs = JSON.parse(this.storedTasbihs);
           this.loading = false;
+          this.error = false;
         } else {
           try {
             const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/tasbih`);
             if (response.statusText === 'OK') {
               this.tasbihs = JSON.parse(response.data?.data?.tasbih);
               localStorage.setItem('tasbih', response.data?.data?.tasbih);
+              this.loading = false;
+              this.error = false;
             }
           } catch (error) {
             this.loading = false;
+            this.error = true;
             console.error('Error fetching data:', error);
-          } finally {
-            this.loading = false;
           }
         }
       },
@@ -95,6 +100,7 @@
       <h1 class="text-2xl font-bold mt-3">Tasbih</h1>
     </div>
   </the-loading>
+  <TheError v-if="error"/>
   <template v-if="!loading">    
     <TheHeader title="Tasbih"/>
     <div class="tasbih-area px-5 py-4">

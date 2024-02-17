@@ -2,7 +2,7 @@
   import axios from 'axios';
   import TheHeader from '@/components/TheHeader.vue';
   import TheLoading from '@/components/TheLoading.vue';
-import TheError from '@/components/TheError.vue';
+  import TheError from '@/components/TheError.vue';
 
   export default {
     components: {
@@ -57,8 +57,6 @@ import TheError from '@/components/TheError.vue';
     </div>
   </the-loading>
   <TheError v-if="error"/>
-  {{ console.log(error)
-   }}
   <template v-if="!loading">
     <TheHeader title="Asma-Ul-Husna"/>
     <div class="asmaulhusna-area px-5 py-4">

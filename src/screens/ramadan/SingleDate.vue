@@ -9,7 +9,7 @@
 </script>
 
 <template>
-  <the-header title="Ramadan - 1">
+  <the-header title="Ramadan - 1" class="bg-primary text-white">
     <div class="location flex items-start gap-1">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.3" stroke="currentColor" class="w-4 h-4">
         <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
@@ -19,9 +19,11 @@
     </div>
   </the-header>
   <div class="ramadan-area">
-    <div class="ramadan-header text-center py-5">
-      <h1 class="text-2xl font-bold">Ramadan - 2024</h1>
-      <p class="pt-1">Sheri and Iftar time alart</p>
+    <div class="ramadan-header text-center text-white bg-primary py-1">
+      <div class="bg-ramadan p-6 bg-no-repeat bg-contain bg-center m-5">
+        <h1 class="text-2xl font-bold">Ramadan - 2024</h1>
+        <p class="pt-1">Sheri and Iftar time alart</p>
+      </div>
     </div>
     <div class="ramadan-date px-10 py-7">
       <h2 class="text-6xl font-black text-center">RAMADAN</h2>
