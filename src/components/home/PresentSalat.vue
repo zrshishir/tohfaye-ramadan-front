@@ -14,7 +14,7 @@
 
 <template>
   <div @click="clickHandler()" v-if="present" class="present-salat bg-primary my-3 h-36 relative rounded-2xl overflow-auto">
-    <div class="salat-content w-full px-6 py-3 text-white absolute top-0 left-0 z-10">
+    <div class="salat-content w-full px-4 py-3 text-white absolute top-0 left-0 z-10">
       <h3 class="pb-3 text-lg font-normal">Present Time</h3>
       <div class="salat mb-3 flex items-center justify-between">
         <div class="salat-name flex items-center gap-2">

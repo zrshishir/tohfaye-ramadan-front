@@ -30,7 +30,7 @@
       <p class="pt-2 text-center">Kibla</p>
     </RouterLink>
     <RouterLink to="/asma-ul-husna" class="option flex flex-col items-center justify-center">
-      <img class="w-7 h-7 object-contain object-center" src="@/assets/images/icons/asma-ul-husna.png" alt="mosque">
+      <img class="w-7 h-7 object-contain object-center" src="@/assets/images/icons/asma-ul-husna.svg" alt="mosque">
       <p class="pt-2 text-center">Asma-Ul-Husna</p>
     </RouterLink>
   </div>

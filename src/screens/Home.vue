@@ -1,3 +1,4 @@
+
 <script>
   import axios from 'axios';
   import Loading from '@/components/Loading.vue';
@@ -62,8 +63,8 @@
       },
       tomorrowSahriIfter(){        
         return {
-          sehri: this.calendar[1].sehri,
-          ifter: this.calendar[1].magrib,
+          sehri: this.calendar[1]?.sehri,
+          ifter: this.calendar[1]?.magrib,
         };
       },
       parseTime(timeString) {
@@ -71,13 +72,12 @@
         return time.toLocaleTimeString('en-US', { hour12: false });
       },
       getCurrentPrayerTime() {
-        console.log(this.calendar[0]);
-        if (this.currentDate.getDate() == this.calendar[0].day) {
-          let foundCurrentPrayer = false;
+        if (this.currentDate.getDate() == this.calendar[0]?.day) {
           let currentTime = this.currentDate.toLocaleTimeString('en-US', { hour12: false });
+          let foundCurrentPrayer = false;
 
           for (let prayer in this.calendar[0]) {
-            if (this.calendar[0].hasOwnProperty(prayer) && prayer !== "day" && prayer !== "id" && prayer !== "month_id" && this.calendar[0][prayer]) {
+            if (this.calendar[0].hasOwnProperty(prayer) && prayer !== "day" && prayer !== "id" && prayer !== "month_id" && prayer !== "forbidden" && this.calendar[0][prayer]) {
               let prayerTime = this.calendar[0][prayer];
 
               if ( this.parseTime(currentTime) >= this.parseTime(prayerTime.start_time) && this.parseTime(currentTime) <= this.parseTime(prayerTime.end_time)) {
@@ -137,6 +137,6 @@
     <TomorrowSchedule :tomorrow="tomorrowSahriIfter()" />
     <MenuOption/>
     <ProhibitedTimes :prohibited="this.calendar[0]?.forbidden"/>
-    <SocialMedia/>
+    <SocialMedia/>?
   </div>
 </template>
