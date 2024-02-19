@@ -12,7 +12,9 @@
     data() {
       return {
         surahs: [],
+        show: false,
         loading: false,
+        selectedSurah: 'all',
         storedSurah: localStorage.getItem('surah'),
       }
     },
@@ -37,6 +39,18 @@
             this.loading = false;
           }
         }
+      },
+      toggleSearch() {
+        this.show = !this.show;
+      },
+      handleSelectSurah() {
+        this.surahs = JSON.parse(this.storedSurah);
+        
+        if (isNaN(this.selectedSurah)) {
+          this.surahs = JSON.parse(this.storedSurah);
+        }else{
+          this.surahs = this.surahs.filter(item => item.id === this.selectedSurah);
+        }
       }
     },
     mounted() {
@@ -53,12 +67,14 @@
     </div>
   </the-loading>
   <template v-if="!loading">
-    <TheHeader title="Al-Quraan"/>
+    <the-header title="Al-Quraan">      
+      <img @click="toggleSearch" src="@/assets/images/search.svg" alt="search">
+    </the-header>
     <div class="tasbih-area px-5 py-3">
-      <div class="relative">
-        <select class="block appearance-none w-full bg-white border border-primary px-4 py-2 pr-8 rounded-xl focus:outline-none focus:shadow-outline">
-          <option>Select Your Surah</option>
-          <option v-for="(surah, index) in surahs" :key="index" :value="surah?.id">{{ surah?.name }} ({{ surah?.arabic_name }})</option>
+      <div v-if="show" class="relative">
+        <select v-model="selectedSurah" @change="handleSelectSurah" class="block appearance-none w-full bg-white border border-primary px-4 py-2 pr-8 rounded-xl focus:outline-none focus:shadow-outline">
+          <option value="all">Select Your Surah</option>
+          <option v-for="(surah, index) in JSON.parse(storedSurah)" :key="index" :value="surah?.id">{{ surah?.name }} ({{ surah?.arabic_name }})</option>
         </select>
         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
           <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -66,7 +82,7 @@
           </svg>
         </div>
       </div>
-      <div class="surahs mt-5">
+      <div class="surahs mt-3">
         <RouterLink v-for="(surah, index) in surahs" :key="index" :to="`/al-quraan/${surah?.id}`" class="surah flex items-center justify-between border border-primary rounded-xl p-3 my-3">
           <div class="content flex items-center gap-3">          
             <div class="number w-10 h-10 bg-union bg-no-repeat bg-center bg-cover flex items-center justify-center">

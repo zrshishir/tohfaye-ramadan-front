@@ -72,9 +72,12 @@
         return time.toLocaleTimeString('en-US', { hour12: false });
       },
       getCurrentPrayerTime() {
+        console.log(this.calendar[0]);
         if (this.currentDate.getDate() == this.calendar[0]?.day) {
+          console.log('ami');
           let currentTime = this.currentDate.toLocaleTimeString('en-US', { hour12: false });
           let foundCurrentPrayer = false;
+
 
           for (let prayer in this.calendar[0]) {
             if (this.calendar[0].hasOwnProperty(prayer) && prayer !== "day" && prayer !== "id" && prayer !== "month_id" && prayer !== "forbidden" && this.calendar[0][prayer]) {
@@ -137,6 +140,6 @@
     <TomorrowSchedule :tomorrow="tomorrowSahriIfter()" />
     <MenuOption/>
     <ProhibitedTimes :prohibited="this.calendar[0]?.forbidden"/>
-    <SocialMedia/>?
+    <SocialMedia/>
   </div>
 </template>
