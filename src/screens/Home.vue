@@ -72,15 +72,13 @@
         return time.toLocaleTimeString('en-US', { hour12: false });
       },
       getCurrentPrayerTime() {
-        console.log(this.calendar[0]);
         if (this.currentDate.getDate() == this.calendar[0]?.day) {
-          console.log('ami');
           let currentTime = this.currentDate.toLocaleTimeString('en-US', { hour12: false });
           let foundCurrentPrayer = false;
-
+          console.log(currentTime);
 
           for (let prayer in this.calendar[0]) {
-            if (this.calendar[0].hasOwnProperty(prayer) && prayer !== "day" && prayer !== "id" && prayer !== "month_id" && prayer !== "forbidden" && this.calendar[0][prayer]) {
+            if (this.calendar[0]?.hasOwnProperty(prayer) && prayer !== "day" && prayer !== "id" && prayer !== "month_id" && prayer !== "forbidden" && this.calendar[0][prayer]) {
               let prayerTime = this.calendar[0][prayer];
 
               if ( this.parseTime(currentTime) >= this.parseTime(prayerTime.start_time) && this.parseTime(currentTime) <= this.parseTime(prayerTime.end_time)) {
@@ -114,9 +112,9 @@
 
         return null;
       }
-    },   
+    },
     created(){
-      this.fetchCalenderData();
+      this.fetchCalenderData().then(() => {
       this.getCurrentPrayerTime();
       this.getTimeLeftUntilEnd();
 
@@ -124,6 +122,7 @@
         this.currentDate = new Date();
         this.getTimeLeftUntilEnd();
       }, 60000);
+    });
     },
     beforeDestroy() {
       clearInterval(this.intervalId);

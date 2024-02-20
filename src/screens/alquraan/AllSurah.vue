@@ -27,11 +27,9 @@
           this.loading = false;
         } else {
           try {
-            const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/sura`);
-            if (response.statusText === 'OK') {
-              this.surahs = response.data?.data;
-              localStorage.setItem('surah', JSON.stringify(response.data?.data));
-            }
+            const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/sura`);            
+            this.surahs = response.data?.data;
+            localStorage.setItem('surah', JSON.stringify(response.data?.data));            
           } catch (error) {
             this.loading = false;
             console.error('Error fetching data:', error);
@@ -45,11 +43,12 @@
       },
       handleSelectSurah() {
         this.surahs = JSON.parse(this.storedSurah);
-        
-        if (isNaN(this.selectedSurah)) {
+
+        if (this.selectedSurah === 'all') {
           this.surahs = JSON.parse(this.storedSurah);
-        }else{
-          this.surahs = this.surahs.filter(item => item.id === this.selectedSurah);
+        } else {
+          // Filter the surahs to display only the selected surah
+          this.surahs = JSON.parse(this.storedSurah).filter(surah => surah.id === this.selectedSurah);
         }
       }
     },
@@ -74,7 +73,7 @@
       <div v-if="show" class="relative">
         <select v-model="selectedSurah" @change="handleSelectSurah" class="block appearance-none w-full bg-white border border-primary px-4 py-2 pr-8 rounded-xl focus:outline-none focus:shadow-outline">
           <option value="all">Select Your Surah</option>
-          <option v-for="(surah, index) in JSON.parse(storedSurah)" :key="index" :value="surah?.id">{{ surah?.name }} ({{ surah?.arabic_name }})</option>
+          <option v-for="(surah, index) in JSON.parse(this.storedSurah) || surahs" :key="index" :value="surah?.id">{{ surah?.name }} ({{ surah?.arabic_name }})</option>
         </select>
         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
           <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">

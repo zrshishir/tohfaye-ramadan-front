@@ -5,6 +5,7 @@
         location: null,
         storedLocation: localStorage.getItem('location'),
         currentDate: new Date().toLocaleDateString('en-US', { timeZone: 'Asia/Dhaka', day: 'numeric', month: 'long', year: 'numeric' }),
+        arabicDate: new Date().toLocaleDateString('ar-EG-u-nu-latn',{weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'}),
       };
     },
     methods: {
@@ -13,6 +14,7 @@
           const { latitude, longitude } = position.coords;
 
           if (this.storedLocation) {
+            console.log(this.arabicDate);
             this.location = JSON.parse(this.storedLocation);
           } else {
             try {
@@ -44,7 +46,7 @@
 <template>
   <header>
     <div class="header-area mt-5 flex items-center justify-between">
-      <p class="font-medium text-base	">Salat Schedule - Bangladesh</p>
+      <p class="font-medium text-base	">Prayer Pulse</p>
       <img src="@/assets/images/setting.svg" alt="setting">
     </div>
   </header>
@@ -52,10 +54,11 @@
   <div class="calender my-6 flex items-center justify-between">
     <div class="date">
       <div class="arabic-date flex items-center gap-3 pb-1">
-        <p class="text-base font-medium">8 Jilhazz 1444</p>
-        <img class="w-5 h-5" src="@/assets/images/up-arrow.svg" alt="up-arrow">
+        <p class="text-base font-medium">{{ currentDate }}</p>
+        <!-- <p class="text-base font-medium">8 Jilhazz 1444</p> -->
+        <!-- <img class="w-5 h-5" src="@/assets/images/up-arrow.svg" alt="up-arrow"> -->
       </div>
-      <p class="text-primary text-xs">{{ currentDate }} | 13 Ashar 1430</p>
+      <p class="text-primary text-xs">8 Jilhazz 1444 | 7 Falgun 1430</p>
     </div>
     <div class="location flex items-start gap-2 px-4 py-2 border-2 border-solid border-primary rounded-3xl	">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.3" stroke="currentColor" class="w-4 h-4">

@@ -55,7 +55,7 @@
   position: relative;
   display: grid;
   place-content: center;
-  transform: rotate(-45deg);
+  transform: rotate(0deg);
   transition: all 0.5s ease-in-out;
 }
 
@@ -88,7 +88,7 @@
   opacity: 0.5;
   width: 30px;
   aspect-ratio: 1;
-  transform: rotate(45deg);
+  transform: rotate(0deg);
   transition: all 0.2s ease-in;
 }
 

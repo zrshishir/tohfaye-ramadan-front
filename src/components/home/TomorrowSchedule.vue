@@ -25,7 +25,7 @@
         this.$router.push({ path: '/time/tomorrow-salat' });
       },
       calculateTimeDifference() {
-        const [hour, minute] = this.tomorrow?.sehri?.start_time.split(/:| /);
+        const [hour, minute] = this.tomorrow?.sehri?.start_time?.split(/:| /);
         const currentTime = new Date();
         const tomorrowDate = new Date(currentTime);
         tomorrowDate.setDate(currentTime.getDate() + 1);
@@ -50,11 +50,11 @@
         <div class="time flex-1">
           <p class="flex items-center justify-between">
             <span class="font-light">Sahri is over</span>
-            <span>{{ tomorrow?.sehri.end_time }}</span>
+            <span>{{ tomorrow?.sehri?.end_time }}</span>
           </p>
           <p class="flex items-center justify-between">
             <span class="font-light">Iftal</span>
-            <span>{{ tomorrow?.ifter.start_time }}</span>
+            <span>{{ tomorrow?.ifter?.start_time }}</span>
           </p>
         </div>
         <div class="next text-center">
