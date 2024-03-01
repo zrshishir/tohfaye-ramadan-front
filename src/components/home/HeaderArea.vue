@@ -14,14 +14,11 @@
           const { latitude, longitude } = position.coords;
 
           if (this.storedLocation) {
-            console.log(this.arabicDate);
             this.location = JSON.parse(this.storedLocation);
           } else {
             try {
               const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${import.meta.env.VITE_BASE_KEY}`);
               const data = await response.json();
-  
-              console.log(data);
   
               if (data.results && data.results.length > 0) {
                 const city = data.results[0].address_components.find(component => component.types.includes('locality')).long_name;

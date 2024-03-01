@@ -72,22 +72,23 @@
         return time.toLocaleTimeString('en-US', { hour12: false });
       },
       getCurrentPrayerTime() {
-        if (this.currentDate.getDate() == this.calendar[0]?.day) {
+        const currentDay = this.calendar.filter(date => parseInt(date.day) === this.currentDate.getDate());
+        
+        if (this.currentDate.getDate() == currentDay[0].day) {
           let currentTime = this.currentDate.toLocaleTimeString('en-US', { hour12: false });
           let foundCurrentPrayer = false;
-          console.log(currentTime);
 
-          for (let prayer in this.calendar[0]) {
-            if (this.calendar[0]?.hasOwnProperty(prayer) && prayer !== "day" && prayer !== "id" && prayer !== "month_id" && prayer !== "forbidden" && this.calendar[0][prayer]) {
-              let prayerTime = this.calendar[0][prayer];
+          for (let prayer in currentDay[0]) {
+            if (currentDay[0]?.hasOwnProperty(prayer) && prayer !== "day" && prayer !== "id" && prayer !== "month_id" && prayer !== "forbidden" && currentDay[0][prayer]) {
+              let prayerTime = currentDay[0][prayer];
 
               if ( this.parseTime(currentTime) >= this.parseTime(prayerTime.start_time) && this.parseTime(currentTime) <= this.parseTime(prayerTime.end_time)) {
-                this.presentSalat = this.calendar[0][prayer];
+                this.presentSalat = currentDay[0][prayer];
                 foundCurrentPrayer = true;
               } else if (this.parseTime(currentTime) >= this.parseTime(prayerTime.start_time) === true && this.parseTime(currentTime) <= this.parseTime(prayerTime.end_time) === false ) {
                 foundCurrentPrayer = true;
               } else if (foundCurrentPrayer) {
-                this.nextSalat = this.calendar[0][prayer];
+                this.nextSalat = currentDay[0][prayer];
                 break;
               }
             }
