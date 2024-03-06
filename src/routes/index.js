@@ -45,7 +45,7 @@ const routes = [
     component: Duas, 
     children: [
       { path: '', name: 'duas', component: CategoryVue },
-      { path: 'category-duas/:id', component: CategoryDuasVue },
+      { path: 'category-duas/:title/:id', component: CategoryDuasVue },
       { path: ':id', component: SingleDuasVue }
     ],
   },

@@ -17,7 +17,7 @@
       <button @click="backHandler" class="back-btn">
         <img src="../assets/images/icons/back-arrow.svg" alt="arrow back">
       </button>
-      <h3 class="text-base font-bold" >{{ title }}</h3>
+      <h3 class="text-base capitalize font-bold" >{{ title }}</h3>
     </div>
     <slot></slot>
   </div>

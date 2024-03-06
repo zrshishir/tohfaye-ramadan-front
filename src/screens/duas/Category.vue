@@ -60,7 +60,12 @@
     <TheHeader title="Dua Category"/>
     <div class="tasbih-area px-5 pb-3">
       <div class="surahs mt-5 grid grid-cols-2 gap-4">
-        <RouterLink v-for="(data, index) in duaCategory" :key="index" :to="`/duas/category-duas/${data?.id}`" class="surah block border border-primary rounded-xl p-3">
+        <RouterLink 
+          v-for="(data, index) in duaCategory" 
+          :key="index" 
+          :to="`/duas/category-duas/${data?.name.toLowerCase()}/${data?.id}`" 
+          class="surah block border border-primary rounded-xl p-3"
+        >
           <div class="content flex items-center justify-center gap-3">
             <div class="text-en text-center">
               <p class="text-lg font-bold pb-1">{{ data?.name }}</p>
