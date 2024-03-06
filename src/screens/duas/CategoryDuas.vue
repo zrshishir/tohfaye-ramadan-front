@@ -46,7 +46,7 @@
         if (this.selectedDua === 'all') {
           this.categoryDuas = JSON.parse(this.storedCategoryDuas);
         } else {
-          this.categoryDuas = JSON.parse(this.storedCategoryDuas).filter(surah => surah.id === this.selectedDua);
+          this.categoryDuas = JSON.parse(this.storedCategoryDuas).filter(dua => dua?.id === this.selectedDua);
         }
       }
     },
