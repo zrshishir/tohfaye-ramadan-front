@@ -19,11 +19,10 @@
       async fetchData() {
         this.loading = true;
         try {
-          const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/ayat/${this.$route?.params?.id}`);
-          if (response.statusText === 'OK') {
-            this.ayat = response.data?.data;
-            localStorage.setItem('ayat', JSON.stringify(response.data?.data));
-          }
+          const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/ayat/${parseInt(this.$route?.params?.id)}`);          
+          this.ayat = response.data?.data;
+          localStorage.setItem('ayat', JSON.stringify(response.data?.data));          
+          this.loading = false;
         } catch (error) {
           this.loading = false;
           console.error('Error fetching data:', error);
@@ -39,28 +38,36 @@
 </script>
 
 <template>
-  <the-header title="Al-Fatiha (الفاتحة)">
-    <div class="description">
-      <span class="text-primary font-semibold">Makki | Verses : 7</span>
+  <the-loading v-if="loading">
+    <div class="page-title text-center">
+      <img class="w-20 m-auto" src="@/assets/images/icons/quraan.svg" alt="Tasbih">
+      <h1 class="text-2xl font-bold mt-3">Al-Quraan</h1>
     </div>
-  </the-header>
-  <div class="single-surah px-5 pb-3">
-    <div v-for="(data, index) in ayat" :key="index" class="surah-ayat my-3 border border-primary rounded-xl">
-      <div class="ayat-ar p-3 border-b border-primary flex items-center justify-between gap-3">
-        <span class="w-10 h-12 bg-ayat bg-no-repeat bg-center bg-cover flex items-center justify-center">
-          {{ data?.ayat_no <= 9 ? `0${data?.ayat_no}` : data?.ayat_no }}
-        </span>
-        <p class="text-2xl">{{ data?.arabic_text }}</p>
+  </the-loading>
+  <template v-if="!loading">
+    <the-header title="Al-Fatiha (الفاتحة)">
+      <div class="description">
+        <span class="text-primary font-semibold">Makki | Verses : 7</span>
       </div>
-      <div class="ayat-bn p-3 border-b border-primary">
-        <p>বিসমিল্লাহির রাহমানির রাহিম</p>
-      </div>
-      <div class="ayat-mn p-3 border-b border-primary">
-        <p>{{ data?.english_text }}</p>
-      </div>
-      <div class="ayat-mn p-3">
-        <p>{{ data?.bangla_text }}</p>
-      </div>
-    </div> 
-  </div>
+    </the-header>
+    <div class="single-surah px-5 pb-3">
+      <div v-for="(data, index) in ayat" :key="index" class="surah-ayat my-3 border border-primary rounded-xl">
+        <div class="ayat-ar p-3 border-b border-primary flex items-center justify-between gap-3">
+          <span class="w-10 h-12 bg-ayat bg-no-repeat bg-center bg-cover flex items-center justify-center">
+            {{ data?.ayat_no <= 9 ? `0${data?.ayat_no}` : data?.ayat_no }}
+          </span>
+          <p class="text-2xl w-fit text-right">{{ data?.arabic_text }}</p>
+        </div>
+        <div class="ayat-bn p-3 border-b border-primary">
+          <p>{{ data?.bangla_text }}</p>
+        </div>
+        <div class="ayat-mn p-3 border-b border-primary">
+          <p>{{ data?.english_text }}</p>
+        </div>
+        <div class="ayat-mn p-3">
+          <p>{{ data?.meaning }}</p>
+        </div>
+      </div> 
+    </div>
+  </template>
 </template>

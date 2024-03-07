@@ -32,8 +32,13 @@
         this.time = todayData;
       },
       getCurrentPrayerTime() {
+        let weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        let todayWeekdayName = weekdays[this.currentDate.getDay()];
+        
         for (let prayer in this.time) {
-          if (this.time.hasOwnProperty(prayer) && prayer !== "day" && prayer !== "id" && prayer !== "month_id" && prayer !== "created_at" && prayer !== "updated_at" && prayer !== "forbidden") {
+          const isFriday = todayWeekdayName === 'Friday' ? prayer !== "johr" : prayer !== "jummah";
+          
+          if (isFriday && this.time.hasOwnProperty(prayer) && prayer !== "day" && prayer !== "id" && prayer !== "month_id" && prayer !== "created_at" && prayer !== "updated_at" && prayer !== "forbidden") {
             this.prayers.push(this.time[prayer]);
           }
         }

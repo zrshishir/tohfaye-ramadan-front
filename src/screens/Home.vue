@@ -42,8 +42,7 @@
     methods: {    
       async fetchCalenderData() {
         this.loading = true;
-        
-        if (this.storedData && this.storedTimestamp && (this.currentTime - parseInt(this.storedTimestamp) < 24 * 60 * 60 * 1000)) {
+        if (this.storedData) {
           this.calendar = JSON.parse(this.storedData);
           this.loading = false;
         } else {
@@ -61,34 +60,40 @@
           }
         }
       },
-      tomorrowSahriIfter(){        
-        return {
-          sehri: this.calendar[1]?.sehri,
-          ifter: this.calendar[1]?.magrib,
-        };
+      tomorrowSahriIfter(){
+        const tomorrowDate = new Date(this.currentDate);
+        tomorrowDate.setDate(this.currentDate.getDate() + 1);
+        const tomorrowDaySalat = this.calendar.filter(date => parseInt(date.day) === tomorrowDate.getDate());
+
+        return { sehri: tomorrowDaySalat[0]?.sehri, ifter: tomorrowDaySalat[0]?.magrib };
       },
       parseTime(timeString) {
         let time = new Date(`${this.formattedDate} ` + timeString);
         return time.toLocaleTimeString('en-US', { hour12: false });
       },
       getCurrentPrayerTime() {
-        const currentDay = this.calendar.filter(date => parseInt(date.day) === this.currentDate.getDate());
+        const currentDaySalat = this.calendar.filter(date => parseInt(date.day) === this.currentDate.getDate());
         
-        if (this.currentDate.getDate() == currentDay[0].day) {
+        if (this.currentDate.getDate() == currentDaySalat[0].day) {
+          let weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+          let todayWeekdayName = weekdays[this.currentDate.getDay()];
+
           let currentTime = this.currentDate.toLocaleTimeString('en-US', { hour12: false });
           let foundCurrentPrayer = false;
 
-          for (let prayer in currentDay[0]) {
-            if (currentDay[0]?.hasOwnProperty(prayer) && prayer !== "day" && prayer !== "id" && prayer !== "month_id" && prayer !== "forbidden" && currentDay[0][prayer]) {
-              let prayerTime = currentDay[0][prayer];
+          for (let prayer in currentDaySalat[0]) {
+            const isFriday = todayWeekdayName === 'Friday' ? prayer !== "johr" : prayer !== "jummah";
+
+            if ( isFriday && currentDaySalat[0]?.hasOwnProperty(prayer) && prayer !== "day" && prayer !== "id" && prayer !== "month_id" && prayer !== "forbidden" && currentDaySalat[0][prayer]) {
+              let prayerTime = currentDaySalat[0][prayer];
 
               if ( this.parseTime(currentTime) >= this.parseTime(prayerTime.start_time) && this.parseTime(currentTime) <= this.parseTime(prayerTime.end_time)) {
-                this.presentSalat = currentDay[0][prayer];
+                this.presentSalat = currentDaySalat[0][prayer];
                 foundCurrentPrayer = true;
               } else if (this.parseTime(currentTime) >= this.parseTime(prayerTime.start_time) === true && this.parseTime(currentTime) <= this.parseTime(prayerTime.end_time) === false ) {
                 foundCurrentPrayer = true;
               } else if (foundCurrentPrayer) {
-                this.nextSalat = currentDay[0][prayer];
+                this.nextSalat = currentDaySalat[0][prayer];
                 break;
               }
             }

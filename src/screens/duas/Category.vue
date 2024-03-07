@@ -61,18 +61,18 @@
     <div class="tasbih-area px-5 pb-3">
       <div class="surahs mt-5">
         <RouterLink 
-          v-for="(data, index) in duaCategory" 
+          v-for="(dua, index) in duaCategory" 
           :key="index" 
-          :to="`/duas/category-duas/${data?.name.toLowerCase()}/${data?.id}`" 
+          :to="`/duas/category-duas/${dua?.name.toLowerCase()}/${dua?.id}`" 
           class="surah block border border-primary rounded-xl p-3 mb-3"
         >
           <div class="content flex items-center gap-4">          
             <div class="number w-10 h-10 bg-union bg-no-repeat bg-center bg-cover flex items-center justify-center">
-              <span class="text-white font-bold">{{ data?.id }}</span>
+              <span class="text-white font-bold">{{ dua?.id }}</span>
             </div>
             <div class="text-en">
-              <p class="text-xl font-bold pb-1">{{ data?.name }}</p>
-              <p class="text-sm">{{data?.bangla_text}} ({{ data?.arabic_text }})</p>
+              <p class="text-xl font-bold pb-1">{{ dua?.name }}</p>
+              <p class="text-sm">{{dua?.bangla_text}} ({{ dua?.arabic_text }})</p>
             </div>
           </div>
         </RouterLink>
