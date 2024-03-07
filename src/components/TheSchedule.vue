@@ -19,13 +19,17 @@
         return new Intl.DateTimeFormat('en-US', options).format(date);
       },
       getCurrentPrayerTime() {
+        let weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        let todayWeekdayName = weekdays[this.currentDate.getDay()];
+
         for (let prayer in this.times) {
-          if (this.times.hasOwnProperty(prayer) && prayer !== "day" && prayer !== "id" && prayer !== "month_id" && prayer !== "created_at" && prayer !== "updated_at") {
+          const isFriday = todayWeekdayName === 'Friday' ? prayer !== "johr" : prayer !== "jummah";
+
+          if (isFriday && this.times.hasOwnProperty(prayer) && prayer !== "day" && prayer !== "id" && prayer !== "month_id" && prayer !== "created_at" && prayer !== "updated_at") {
             let prayerTime = JSON.parse(this.times[prayer]);
             this.prayers.push(prayerTime);
           }
         }
-        console.log(this.times);
       },
     },
     created(){
