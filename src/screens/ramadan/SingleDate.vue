@@ -87,11 +87,11 @@
           </div>
         </div>
         <div class="time flex items-center justify-between gap-3">
-          <div class="bg-primary p-7 shadow-3xl text-center text-white border border-white rounded-2xl">
+          <div class="bg-primary w-full py-7 shadow-3xl text-center text-white border border-white rounded-2xl">
             <p class="text-xl font-bold">{{ ramadanSingleCalender?.data?.sehri?.end_time }}</p>
             <p class="text-lg pt-1">Sahri</p>
           </div>
-          <div class="bg-primary p-7 shadow-3xl text-center text-white border border-white rounded-2xl">
+          <div class="bg-primary w-full py-7 shadow-3xl text-center text-white border border-white rounded-2xl">
             <p class="text-xl font-bold">{{ ramadanSingleCalender?.data?.magrib?.start_time }}</p>
             <p class="text-lg pt-1">Iftar</p>
           </div>

@@ -9,7 +9,7 @@
     components: { 
       TheHeader,
       TheLoading,
-      TheError
+      TheError,
     },
     data(){
       return {

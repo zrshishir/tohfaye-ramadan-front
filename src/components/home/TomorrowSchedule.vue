@@ -49,7 +49,7 @@
       <div class="schedule-contant flex items-center justify-between gap-6">
         <div class="time flex-1">
           <p class="flex items-center justify-between">
-            <span class="font-light">Sahri is over</span>
+            <span class="font-light">Sahri</span>
             <span>{{ tomorrow?.sehri?.end_time }}</span>
           </p>
           <p class="flex items-center justify-between">
