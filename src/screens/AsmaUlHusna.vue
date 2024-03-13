@@ -6,10 +6,10 @@
 
   export default {
     components: {
-    TheHeader,
-    TheLoading,
-    TheError
-},
+      TheHeader,
+      TheLoading,
+      TheError
+    },
     data(){
       return {
         loading: false,

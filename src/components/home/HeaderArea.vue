@@ -1,41 +1,49 @@
 <script>
+  import { Geolocation } from '@capacitor/geolocation';
+  import { Preferences } from '@capacitor/preferences';
+
   export default {
     data() {
       return {
         location: null,
         storedLocation: localStorage.getItem('location'),
         currentDate: new Date().toLocaleDateString('en-US', { timeZone: 'Asia/Dhaka', day: 'numeric', month: 'long', year: 'numeric' }),
-        arabicDate: new Date().toLocaleDateString('ar-EG-u-nu-latn',{weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'}),
       };
     },
     methods: {
-      getUserLocation() {
-        navigator.geolocation.getCurrentPosition(async (position) => {
-          const { latitude, longitude } = position.coords;
+      async getUserLocationPhone() {
+        const position = await Geolocation.getCurrentPosition();
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
 
-          if (this.storedLocation) {
-            this.location = JSON.parse(this.storedLocation);
-          } else {
-            try {
-              const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${import.meta.env.VITE_BASE_KEY}`);
-              const data = await response.json();
-  
-              if (data.results && data.results.length > 0) {
-                const city = data.results[0].address_components.find(component => component.types.includes('locality')).long_name;
-                const division = data.results[0].address_components.find(component => component.types.includes('administrative_area_level_1')).long_name;
-                this.location = { lat: latitude, lng: longitude, city, division };
-                localStorage.setItem('location', JSON.stringify(this.location));
-              }
-            } catch (error) {
-              console.error('Error fetching city:', error);
-            }            
+        const storedLocationPhone = await Preferences.get({ key: 'location' });
+
+        if (this.storedLocation || storedLocationPhone.value) {
+          this.location = JSON.parse(this.storedLocation);
+
+          if (storedLocationPhone.value) {            
+            this.location = JSON.parse(storedLocationPhone.value);
           }
+        } else {
+          try {
+            const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${import.meta.env.VITE_BASE_KEY}`);
+            const data = await response.json();
 
-        });
-      },
+            if (data.results && data.results.length > 0) {
+              const city = data.results[0].address_components.find(component => component.types.includes('locality')).long_name;
+              const division = data.results[0].address_components.find(component => component.types.includes('administrative_area_level_1')).long_name;
+              this.location = { lat: latitude, lng: longitude, city, division };
+              localStorage.setItem('location', JSON.stringify(this.location));
+              await Preferences.set({ key: 'location', value: JSON.stringify(this.location) });
+            }
+          } catch (error) {
+            console.error('Error fetching city:', error);
+          }            
+        }
+      }
     },
     mounted() {
-      this.getUserLocation();
+      this.getUserLocationPhone();
     }
   }
 </script>

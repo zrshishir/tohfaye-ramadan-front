@@ -11,8 +11,11 @@
   "dependencies": {
     "@capacitor/android": "^5.7.0",
     "@capacitor/core": "^5.7.0",
+    "@capacitor/geolocation": "^5.0.7",
     "@capacitor/ios": "^5.7.0",
+    "@capacitor/preferences": "^5.0.7",
     "axios": "^1.6.5",
+    "moment": "^2.30.1",
     "vue": "^3.3.11",
     "vue-router": "^4.2.5"
   },
