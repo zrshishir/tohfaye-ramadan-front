@@ -71,7 +71,7 @@
       <img @click="toggleSearch" src="@/assets/images/search.svg" alt="search">
     </the-header>
     <TheNoData v-if="categoryDuas.length === 0"/>
-    <div class="tasbih-area px-5">
+    <div v-if="categoryDuas.length !== 0" class="tasbih-area px-5">
       <div v-if="show" class="relative">
         <select v-model="selectedDua" @change="handleSelectDua" class="block appearance-none w-full bg-white border border-primary px-4 py-2 pr-8 rounded-full focus:outline-none focus:shadow-outline">
           <option value="all">Select Your Dua</option>

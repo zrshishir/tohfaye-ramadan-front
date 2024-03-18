@@ -2,11 +2,13 @@
   import axios from 'axios';
   import TheHeader from '@/components/TheHeader.vue';
   import TheLoading from '@/components/TheLoading.vue';
+  import TheNoData from '@/components/TheNoData.vue';
 
   export default {
     components: {
       TheHeader,
-      TheLoading
+      TheLoading,
+      TheNoData
     },
     data() {
       return {
@@ -45,12 +47,13 @@
     </div>
   </the-loading>
   <template v-if="!loading">
-    <the-header title="Al-Fatiha (الفاتحة)">
+    <the-header :title="`${$route?.params?.name} (${$route?.params?.nameArabic})`">
       <div class="description">
-        <span class="text-primary font-semibold">Makki | Verses : 7</span>
+        <span class="text-primary font-semibold">{{$route?.params?.type}} | Verses : {{$route?.params?.ayatCount}}</span>
       </div>
     </the-header>
-    <div class="single-surah px-5 pb-3">
+    <TheNoData v-if="ayat.length === 0"/>
+    <div v-if="ayat.length !== 0" class="single-surah px-5 pb-3">
       <div v-for="(data, index) in ayat" :key="index" class="surah-ayat my-3 border border-primary rounded-xl">
         <div class="ayat-ar p-3 border-b border-primary flex items-center justify-between gap-3">
           <span class="w-10 h-12 bg-ayat bg-no-repeat bg-center bg-cover flex items-center justify-center">

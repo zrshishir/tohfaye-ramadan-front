@@ -37,7 +37,7 @@ const routes = [
     component: AlQuraan,
     children: [
       { path: '', name: 'al-quraan', component: AllSurahVue },
-      { path: ':id', component: SingleSurahVue }
+      { path: ':name/:nameArabic/:type/:ayatCount/:id', component: SingleSurahVue }
     ],
   },
   {
