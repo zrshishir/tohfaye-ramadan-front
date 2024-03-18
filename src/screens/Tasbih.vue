@@ -3,12 +3,14 @@
   import TheHeader from '@/components/TheHeader.vue';
   import TheLoading from '@/components/TheLoading.vue';
   import TheError from '@/components/TheError.vue';
+  import TheNoData from '@/components/TheNoData.vue';
 
   export default {
     components: {
     TheHeader,
     TheLoading,
-    TheError
+    TheError,
+    TheNoData
   },
     data(){
       return {
@@ -101,7 +103,8 @@
   <TheError v-if="error"/>
   <template v-if="!loading">    
     <TheHeader title="Tasbih"/>
-    <div class="tasbih-area px-5 py-4">
+    <TheNoData v-if="tasbihs === 0"/>
+    <div v-if="tasbihs !== 0" class="tasbih-area px-5 py-4">
       <div v-for="(tasbih, index) in tasbihs" :key="index" class="tasbih mb-3 p-3 border-2 border-primary rounded-3xl flex items-center justify-between gap-3 bg-tasbih bg-cover bg-center bg-no-repeat">
         <div class="tasbih-content flex-1 text-center">
           <h3 class="text-3xl">{{ tasbih?.text_ar }}</h3>

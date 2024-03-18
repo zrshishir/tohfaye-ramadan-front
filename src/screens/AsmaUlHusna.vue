@@ -3,12 +3,14 @@
   import TheHeader from '@/components/TheHeader.vue';
   import TheLoading from '@/components/TheLoading.vue';
   import TheError from '@/components/TheError.vue';
+import TheNoData from '@/components/TheNoData.vue';
 
   export default {
     components: {
       TheHeader,
       TheLoading,
-      TheError
+      TheError,
+      TheNoData
     },
     data(){
       return {
@@ -57,7 +59,8 @@
   <TheError v-if="error"/>
   <template v-if="!loading">
     <TheHeader title="Asma-Ul-Husna"/>
-    <div class="asmaulhusna-area px-5 py-4">
+    <TheNoData v-if="asmaulhusna === 0"/>
+    <div v-if="asmaulhusna !== 0" class="asmaulhusna-area px-5 py-4">
       <div class="names-area grid grid-cols-2 gap-3">
         <div v-for="(data, index) in asmaulhusna" :key="index" class="name bg-white shadow-3xl rounded-2xl overflow-auto">
           <div class="name-content pt-4 pb-1 text-center">

@@ -71,8 +71,8 @@
     <the-header title="Al-Quraan">      
       <img @click="toggleSearch" src="@/assets/images/search.svg" alt="search">
     </the-header>
-    <TheNoData v-if="ayat.surahs === 0"/>
-    <div v-if="ayat.surahs !== 0" class="tasbih-area px-5 pb-3">
+    <TheNoData v-if="surahs === 0"/>
+    <div v-if="surahs !== 0" class="tasbih-area px-5 pb-3">
       <div v-if="show" class="relative">
         <select v-model="selectedSurah" @change="handleSelectSurah" class="block appearance-none w-full bg-white border border-primary px-4 py-2 pr-8 rounded-xl focus:outline-none focus:shadow-outline">
           <option value="all">Select Your Surah</option>

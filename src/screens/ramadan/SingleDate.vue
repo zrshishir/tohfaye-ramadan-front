@@ -3,12 +3,14 @@
   import TheHeader from '@/components/TheHeader.vue';
   import TheLoading from '@/components/TheLoading.vue';
   import TheError from '@/components/TheError.vue';
+import TheNoData from '@/components/TheNoData.vue';
 
   export default {
     components: { 
       TheHeader,
       TheLoading,
       TheError,
+      TheNoData
     },
     data(){
       return {
@@ -69,7 +71,8 @@
         <span class="text-sm font-normal">{{ location?.city }}</span>
       </div>
     </the-header>
-    <div class="ramadan-area">
+    <TheNoData v-if="ramadanSingleCalender === 0"/>
+    <div v-if="ramadanSingleCalender !== 0" class="ramadan-area">
       <div class="ramadan-header text-center text-white bg-primary py-1">
         <div class="bg-ramadan p-6 bg-no-repeat bg-contain bg-center m-5">
           <h1 class="text-2xl font-bold">Ramadan - 2024</h1>
