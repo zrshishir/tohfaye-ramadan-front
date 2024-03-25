@@ -6,7 +6,7 @@
 </script>
 
 <template>
-  <RouterLink to="https://www.facebook.com/prayerpulse" class="social-media mt-3 py-3 px-4 rounded-lg bg-primary flex items-center justify-between gap-3">
+  <a href="https://www.facebook.com/prayerpulse" class="social-media mt-3 py-3 px-4 rounded-lg bg-primary flex items-center justify-between gap-3">
     <img class="w-16" src="@/assets/images/logo.svg" alt="social-logo">
     <p class="text-xs text-center text-white">Join our Facebook page to give your original feedback about the app.</p>
     <a href="https://www.facebook.com/prayerpulse" class="bg-white px-3 py-2 rounded">
@@ -14,5 +14,5 @@
         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
       </svg>
     </a>
-  </RouterLink>
+  </a>
 </template>

@@ -74,7 +74,7 @@
       getCurrentPrayerTime() {
         const currentDaySalat = this.calendar.filter(date => parseInt(date.day) === this.currentDate.getDate());
         
-        if (this.currentDate.getDate() == currentDaySalat[0].day) {
+        if (this.currentDate.getDate() == currentDaySalat[0]?.day) {
           let weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
           let todayWeekdayName = weekdays[this.currentDate.getDay()];
 
