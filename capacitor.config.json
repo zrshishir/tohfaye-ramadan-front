@@ -1,0 +1,8 @@
+{
+  "appId": "com.tazqiah.prayerPulse",
+  "appName": "prayer-pulse",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  }
+}
