@@ -85,7 +85,7 @@
     <TheNoData v-if="ramadanCalender === 0"/>
     <div v-if="ramadanCalender !== 0" class="ramadan-area">
       <div class="ramadan-header text-center text-white bg-primary py-1">
-        <div class="bg-ramadan p-6 bg-no-repeat bg-contain bg-center m-5">
+        <div class="p-6 m-5">
           <h1 class="text-2xl font-bold">Ramadan - 2024</h1>
           <p class="pt-1">Sheri and Iftar time alart</p>
         </div>

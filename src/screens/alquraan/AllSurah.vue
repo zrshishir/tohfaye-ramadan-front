@@ -16,6 +16,7 @@
         surahs: [],
         show: false,
         loading: false,
+        isModalOpen: false,
         selectedSurah: 'all',
         storedSurah: localStorage.getItem('surah'),
       }
@@ -52,6 +53,12 @@
           // Filter the surahs to display only the selected surah
           this.surahs = JSON.parse(this.storedSurah).filter(surah => surah.id === this.selectedSurah);
         }
+      },
+      openModal() {
+        this.isModalOpen = true;
+      },
+      closeModal() {
+        this.isModalOpen = false;
       }
     },
     mounted() {
@@ -69,7 +76,7 @@
   </the-loading>
   <template v-if="!loading">
     <the-header title="Al-Quraan">      
-      <img @click="toggleSearch" src="@/assets/images/search.svg" alt="search">
+      <img @click="toggleSearch" class="w-[22px]" src="@/assets/images/search.svg" alt="search">
     </the-header>
     <TheNoData v-if="surahs === 0"/>
     <div v-if="surahs !== 0" class="tasbih-area px-5 pb-3">

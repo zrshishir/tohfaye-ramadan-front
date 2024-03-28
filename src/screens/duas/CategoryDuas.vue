@@ -68,7 +68,7 @@
   <TheError v-if="error"/>
   <template v-if="!loading">
     <the-header :title="`${$route?.params?.title} Duas`">      
-      <img @click="toggleSearch" src="@/assets/images/search.svg" alt="search">
+      <img @click="toggleSearch" class="w-[22px]" src="@/assets/images/search.svg" alt="search">
     </the-header>
     <TheNoData v-if="categoryDuas.length === 0"/>
     <div v-if="categoryDuas.length !== 0" class="tasbih-area px-5">

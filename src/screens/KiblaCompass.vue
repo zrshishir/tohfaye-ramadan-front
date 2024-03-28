@@ -66,6 +66,7 @@
     </the-header>
     <div class="compass-area relative flex items-center justify-center h-96 mt-44 px-5">
       <img class="absolute " src="../assets/images/compass.png" alt="Compass">
+      <p class="text-xl mt-96 uppercase bg-primary text-white px-10 py-3 rounded-full">Coming Soon</p>
       <!-- <img class="fixed top-[44%] left-[31.5%] rotate-[150deg]" src="../assets/images/compass-kaaba.png" alt="Compass"> -->
     </div>
   </template>
