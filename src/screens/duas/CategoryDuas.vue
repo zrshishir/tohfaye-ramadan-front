@@ -19,6 +19,7 @@
         error: false,
         loading: false,
         categoryDuas: [],
+        filtercategoryDua: [],
         isModalOpen: false,
         selectedOption: 'Select Your Dua',
         storedCategoryDuas: localStorage.getItem('Category-Duas'),
@@ -44,12 +45,10 @@
         this.show = !this.show;
       },
       handleSelectDua() {
-        this.categoryDuas = JSON.parse(this.storedCategoryDuas);
-
         if (this.selectedOption === 'Select Your Dua') {
-          this.categoryDuas = JSON.parse(this.storedCategoryDuas);
+          this.filtercategoryDua = this.categoryDuas;
         } else {
-          this.categoryDuas = JSON.parse(this.storedCategoryDuas).filter(dua => dua?.title === this.selectedOption);
+          this.filtercategoryDua = this.categoryDuas.filter(dua => dua?.title === this.selectedOption);
         }
 
         this.isModalOpen = false;
@@ -120,7 +119,18 @@
       </div>
       
       <div class="surahs mt-3 pb-3">
-        <RouterLink v-for="(dua, index) in categoryDuas" :key="index" :to="`/duas/${dua?.id}`" class="surah flex items-center justify-between border border-primary rounded-xl p-3 mb-3">
+        <RouterLink v-if="filtercategoryDua.length !== 0" v-for="(dua, index) in filtercategoryDua" :key="index" :to="`/duas/${dua?.id}`" class="surah flex items-center justify-between border border-primary rounded-xl p-3 mb-3">
+          <div class="content flex items-center gap-3">          
+            <div class="number w-10 h-10 bg-union bg-no-repeat bg-center bg-cover flex items-center justify-center">
+              <span class="text-white font-bold">{{ dua?.id }}</span>
+            </div>
+            <div class="text-en">
+              <p class="text-base font-bold pb-1">{{ dua?.title }}</p>
+              <p class="text-sm">{{ dua?.reference }}</p>
+            </div>
+          </div>
+        </RouterLink>      
+        <RouterLink v-if="filtercategoryDua.length === 0" v-for="(dua, index) in categoryDuas" :key="index" :to="`/duas/${dua?.id}`" class="surah flex items-center justify-between border border-primary rounded-xl p-3 mb-3">
           <div class="content flex items-center gap-3">          
             <div class="number w-10 h-10 bg-union bg-no-repeat bg-center bg-cover flex items-center justify-center">
               <span class="text-white font-bold">{{ dua?.id }}</span>

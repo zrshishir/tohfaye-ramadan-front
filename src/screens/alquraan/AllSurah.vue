@@ -14,6 +14,7 @@
     data() {
       return {
         surahs: [],
+        filterSurah: [],
         show: false,
         loading: false,
         isModalOpen: false,
@@ -45,13 +46,10 @@
         this.show = !this.show;
       },
       handleSelectSurah() {
-        this.surahs = JSON.parse(this.storedSurah);
-
         if (this.selectedOption === 'Select Your Surah') {
-          this.surahs = JSON.parse(this.storedSurah);
+          this.filterSurah = this.surahs;
         } else {
-          // Filter the surahs to display only the selected surah
-          this.surahs = JSON.parse(this.storedSurah).filter(surah => surah.name === this.selectedOption);
+          this.filterSurah = this.surahs.filter(surah => surah.name === this.selectedOption);
         }
 
         this.isModalOpen = false;
@@ -120,9 +118,29 @@
         <!-- Modal End -->
       </div>
       <div class="surahs mt-3">
-        {{ console.log(selectedOption)
-         }}
+         <RouterLink 
+          v-if="filterSurah.length !== 0"
+          v-for="(surah, index) in filterSurah" 
+          :key="index" 
+          :to="`/al-quraan/${surah?.name}/${surah?.arabic_name}/${surah?.type}/${surah?.ayat_count}/${surah?.id}`" 
+          class="surah flex items-center justify-between border border-primary rounded-xl p-3 mb-3"
+        >
+          <div class="content flex items-center gap-3">          
+            <div class="number w-10 h-10 bg-union bg-no-repeat bg-center bg-cover flex items-center justify-center">
+              <span class="text-white font-bold">{{ surah?.id <= 9 ? `0${surah?.id}` : surah?.id }}</span>
+            </div>
+            <div class="text-en">
+              <p class="text-lg font-bold">{{ surah?.name }} - {{ surah?.ayat_count }}</p>
+              <p class="text-sm">{{ surah?.bangla_text }} ({{ surah?.meaning }})</p>
+            </div>
+          </div>
+          <div class="text-ar text-right">
+            <p class="text-xl font-bold">{{ surah?.arabic_name }}</p>
+            <p class="text-sm">{{ surah?.place_of_revelation }}</p>
+          </div>
+        </RouterLink>
         <RouterLink 
+          v-if="filterSurah.length === 0"
           v-for="(surah, index) in surahs" 
           :key="index" 
           :to="`/al-quraan/${surah?.name}/${surah?.arabic_name}/${surah?.type}/${surah?.ayat_count}/${surah?.id}`" 
