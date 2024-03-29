@@ -71,14 +71,14 @@
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: linear-gradient(60deg, rgb(0 128 0) 0%, rgb(193 224 193) 100%);
+  background: linear-gradient(60deg, rgb(0 128 0) 0%, rgb(0 128 0) 100%);
 }
 
 .tasbih-button .bloom-container .tasbih-button-container-main .tasbih-button-inner .front {
   position: absolute;
   inset: 5px;
   border-radius: 50%;
-  background: linear-gradient(60deg, rgb(193 224 193) 0%, rgb(72 164 72) 100%);
+  background: linear-gradient(60deg, rgb(0 128 0) 0%, rgb(0 128 0) 100%);
   display: grid;
   place-content: center;
 }
