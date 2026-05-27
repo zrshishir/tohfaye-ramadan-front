@@ -7,14 +7,15 @@ export default {
   theme: {
     extend: {
       colors: {
-        'primary': '#008000',
-        'secondary': '#F9B44F',
-        'black': '#000000',
+        'primary': '#064e3b', // Deep emerald green
+        'secondary': '#d4af37', // Gold accents
+        'sand': '#fdfbf7', // Sand background
+        'black': '#111827',
         'white': '#FFFFFF',
         'cultured': '#F5F5F5',
         'lightWhite': '#FFFFFF80',
         'gainsboro': '#DDDDDD',
-        'darkGreen': '#036F03'
+        'darkGreen': '#047857' // Emerald green
       },
       backgroundImage: {
         'tasbih': "url('../assets/images/tasbih-bg.png')",

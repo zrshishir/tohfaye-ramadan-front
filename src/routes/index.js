@@ -21,6 +21,10 @@ import TomorrowTimesVue from '@/screens/time/TomorrowTimes.vue';
 import CalendarVue from '@/screens/ramadan/Calendar.vue';
 import SingleDateVue from '@/screens/ramadan/SingleDate.vue';
 
+// New routes
+import HadithVue from '@/screens/Hadith.vue';
+import MasalaVue from '@/screens/Masala.vue';
+
 // Create a router instance
 const vueRouter = createRouter({
   history: createWebHistory(),
@@ -64,6 +68,8 @@ const vueRouter = createRouter({
     },
     { path: '/asma-ul-husna', component: AsmaUlHusnaVue },
     { path: '/kibla-compass', component: KiblaCompassVue },
+    { path: '/hadith', component: HadithVue },
+    { path: '/masala', component: MasalaVue },
   ],
 });
 
