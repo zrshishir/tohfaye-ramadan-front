@@ -14,22 +14,46 @@
       return {
         ayat: [],
         loading: false,
-        storedAyat: localStorage.getItem('ayat'),
+        currentPage: 1,
+        lastPage: 1,
       }
     },
     methods: {
-      async fetchData() {
+      async fetchData(page) {
         this.loading = true;
+        const targetPage = page || parseInt(this.$route.query.page) || 1;
+
         try {
-          const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/ayat/${parseInt(this.$route?.params?.id)}`);          
-          this.ayat = response.data?.data;
-          localStorage.setItem('ayat', JSON.stringify(response.data?.data));          
-          this.loading = false;
+          const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/ayat/${parseInt(this.$route?.params?.id)}?page=${targetPage}`);          
+          
+          const responseData = response.data?.data;
+          let newAyats = [];
+          
+          if (Array.isArray(responseData)) {
+            // Fallback for unpaginated API (e.g. if hitting live server)
+            newAyats = responseData;
+          } else if (responseData?.data) {
+            // Paginated API
+            newAyats = responseData.data;
+          }
+
+          this.ayat = newAyats;
+          this.currentPage = responseData?.current_page || 1;
+          this.lastPage = responseData?.last_page || 1;
+
+          if (parseInt(this.$route.query.page) !== this.currentPage) {
+             this.$router.replace({ query: { ...this.$route.query, page: this.currentPage } });
+          }
         } catch (error) {
-          this.loading = false;
           console.error('Error fetching data:', error);
         } finally {
           this.loading = false;
+        }
+      },
+      changePage(newPage) {
+        if (newPage >= 1 && newPage <= this.lastPage) {
+          this.fetchData(newPage);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       }
     },
@@ -71,6 +95,23 @@
           <p>{{ data?.meaning }}</p>
         </div>
       </div> 
+      <div v-if="lastPage > 1" class="flex items-center justify-between mt-6 mb-8">
+        <button 
+          @click="changePage(currentPage - 1)" 
+          class="bg-primary text-white px-4 py-2 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed" 
+          :disabled="currentPage === 1"
+        >
+          Previous
+        </button>
+        <span class="font-bold text-primary">Page {{ currentPage }} of {{ lastPage }}</span>
+        <button 
+          @click="changePage(currentPage + 1)" 
+          class="bg-primary text-white px-4 py-2 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed" 
+          :disabled="currentPage === lastPage"
+        >
+          Next
+        </button>
+      </div>
     </div>
   </template>
 </template>
