@@ -1,5 +1,5 @@
 <script>
-  import axios from 'axios';
+  import api from '@/services/api';
   import TheHeader from '@/components/TheHeader.vue';
   import TheLoading from '@/components/TheLoading.vue';
   import TheError from '@/components/TheError.vue';
@@ -25,7 +25,7 @@ import TheNoData from '@/components/TheNoData.vue';
         this.loading = true;
 
         try {
-          const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/ramazan-calendar`);
+          const response = await api.get('/ramazan-calendar');
           const result = response.data?.data?.permanent_calendars;
           const filterData = result.filter(data => data?.id === parseInt(this.$route?.params?.id));
 
@@ -95,7 +95,7 @@ import TheNoData from '@/components/TheNoData.vue';
             <p class="text-lg pt-1">Sahri</p>
           </div>
           <div class="bg-primary w-full py-7 shadow-3xl text-center text-white border border-white rounded-2xl">
-            <p class="text-xl font-bold">{{ ramadanSingleCalender?.data?.magrib?.start_time }}</p>
+            <p class="text-xl font-bold">{{ (ramadanSingleCalender?.data?.iftar ?? ramadanSingleCalender?.data?.magrib)?.start_time }}</p>
             <p class="text-lg pt-1">Iftar</p>
           </div>
         </div>

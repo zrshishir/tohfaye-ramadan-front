@@ -1,5 +1,5 @@
 <script>
-  import axios from 'axios';
+  import api, { unwrap } from '@/services/api';
   import TheHeader from '@/components/TheHeader.vue';
   import TheLoading from '@/components/TheLoading.vue';
   import TheError from '@/components/TheError.vue';
@@ -24,11 +24,10 @@
         this.loading = true;
 
         try {
-          const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/hadith`);
+          const response = await api.get('/hadith');
 
-          // The API answers 204 with an empty body when nothing is published,
-          // so response.data is an empty string rather than an envelope.
-          this.hadiths = response.status === 204 ? [] : (response.data?.data ?? []);
+          // unwrap() handles the 204-with-empty-body case as well as the envelope.
+          this.hadiths = unwrap(response);
           this.error = false;
         } catch (error) {
           this.error = true;

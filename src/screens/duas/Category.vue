@@ -1,5 +1,5 @@
 <script>
-  import axios from 'axios';
+  import api from '@/services/api';
   import { RouterLink } from 'vue-router';
   import TheHeader from '@/components/TheHeader.vue';
   import TheLoading from '@/components/TheLoading.vue';
@@ -29,7 +29,7 @@
           this.error = false;
         } else {
           try {
-            const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/doa-category`);
+            const response = await api.get('/doa-category');
             this.duaCategory = response.data?.data;
             localStorage.setItem('Dua-Category', JSON.stringify(response.data?.data));
             this.loading = false;

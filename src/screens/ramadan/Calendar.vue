@@ -1,5 +1,5 @@
 <script>
-  import axios from 'axios';
+  import api from '@/services/api';
   import moment from 'moment';
   import { RouterLink } from 'vue-router';
   import TheHeader from '@/components/TheHeader.vue';
@@ -33,7 +33,7 @@
           this.error = false;
         } else {
           try {
-            const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/ramazan-calendar`);
+            const response = await api.get('/ramazan-calendar');
             this.ramadanCalender = response.data?.data?.permanent_calendars;
             localStorage.setItem('Ramadan-Calender', JSON.stringify(this.ramadanCalender));
             this.loading = false;
@@ -111,7 +111,7 @@
             <div class="text-center py-3 font-medium border-r-2 border-gainsboro">{{ ramadan?.day }} {{ getDayWithMonthName(ramadan?.day, ramadan?.month_id) }}</div>
             <div class="text-center py-3 font-medium border-r-2 border-gainsboro">{{ index + 1 }}</div>
             <div class="text-center py-3 font-medium border-r-2 border-gainsboro">{{ ramadan?.sehri?.end_time }}</div>
-            <div class="text-center py-3 font-medium">{{ ramadan?.magrib?.start_time }}</div>
+            <div class="text-center py-3 font-medium">{{ (ramadan?.iftar ?? ramadan?.magrib)?.start_time }}</div>
           </RouterLink>
         </div>
       </div>

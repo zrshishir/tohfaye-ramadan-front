@@ -1,6 +1,6 @@
 
 <script>
-  import axios from 'axios';
+  import api from '@/services/api';
   import Loading from '@/components/Loading.vue';
   import NextSalat from '@/components/home/NextSalat.vue';
   import HeaderArea from '@/components/home/HeaderArea.vue';
@@ -47,8 +47,8 @@
           this.loading = false;
         } else {
           try {
-            const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/permanent-calendar`);
-            this.calendar = response.data?.data?.permanent_calendars?.data;
+            const response = await api.post('/permanent-calendar');
+            this.calendar = response.data?.data?.permanent_calendars?.data || [];
             
             localStorage.setItem('calendarData', JSON.stringify(this.calendar));
             localStorage.setItem('calendarTimestamp', this.currentTime.toString());
@@ -65,7 +65,13 @@
         tomorrowDate.setDate(this.currentDate.getDate() + 1);
         const tomorrowDaySalat = this.calendar.filter(date => parseInt(date.day) === tomorrowDate.getDate());
 
-        return { sehri: tomorrowDaySalat[0]?.sehri, ifter: tomorrowDaySalat[0]?.magrib };
+        // Prefer the API's derived `iftar`, which carries the mazhab's iftar_time
+        // offset. `magrib` is the fallback for a pre-1.3.0 backend, and carries
+        // magrib_time instead — the two differ whenever a mazhab configures them apart.
+        return {
+          sehri: tomorrowDaySalat[0]?.sehri,
+          iftar: tomorrowDaySalat[0]?.iftar ?? tomorrowDaySalat[0]?.magrib,
+        };
       },
       parseTime(timeString) {
         let time = new Date(`${this.formattedDate} ` + timeString);

@@ -7,6 +7,85 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.4.0] - 2026-08-10
+
+> Pairs with backend **1.3.0**, which fixes `GET /ramazan-calendar` (previously 500 on
+> every request) and adds a derived `iftar` to all calendar responses. Falls back
+> gracefully to `magrib` against an older backend.
+
+### Fixed
+
+- **Iftar times were showing the Magrib time.** Every screen read `magrib.start_time` as
+  a stand-in for iftar, which carries the mazhab's `magrib_time` offset rather than its
+  `iftar_time`. The two are both 15 minutes in the seeded data, so the values coincided —
+  but they diverge for any mazhab that configures them apart. All four call sites now use
+  the API's derived `iftar`, with `magrib` as a fallback.
+
+### Changed
+
+- `ifter` renamed to `iftar` in `Home.vue` and `TomorrowSchedule.vue`. It was a
+  locally-constructed alias (`ifter: tomorrowDaySalat[0]?.magrib`), so nothing was broken
+  by the misspelling — but it obscured that the value was Magrib rather than iftar.
+
+## [2.3.0] - 2026-08-10
+
+### Added
+
+- `src/services/api.js` — a single shared axios instance. All 14 screens now import it
+  instead of constructing their own request with `import.meta.env.VITE_BASE_URL`
+  interpolated inline at 15 separate call sites.
+  - `baseURL` set once, so a relative path can no longer be used by mistake. That is
+    exactly how the Hadith and Masala screens shipped broken: a relative URL resolves
+    against `capacitor://localhost` in a native build.
+  - 15s timeout — there was previously none, so a hung request left a screen spinning
+    forever.
+  - Response interceptor normalising failures to `error.status` and `error.appMessage`,
+    covering HTTP errors, timeouts and unreachable-host separately.
+  - `unwrap()` helper handling the `204`-with-empty-body case alongside the
+    `{status, statusCode, message, data}` envelope.
+- A loud console error when `VITE_BASE_URL` is unset, naming the `cp .env.example .env`
+  step and the fact that Vite inlines env values at build time.
+
+### Fixed
+
+- Prayer-time screens crashed when the calendar API returned no data. `times.find(...)`
+  and `result.find(...)` were called on `undefined`, and `TomorrowSchedule` destructured
+  `.split()` off an undefined `start_time`, taking down the home screen. Five files now
+  degrade to an empty view instead.
+
+## [2.2.0] - 2026-08-10
+
+### Fixed
+
+- **The Qibla bearing was wrong everywhere on earth.** `KiblaCompass.vue` passed
+  **degrees** into `Math.sin()` / `Math.cos()`, which take **radians**. Measured against
+  published Qibla directions the old code was off by 12° in Jakarta, 31° in Sydney, 119°
+  in Dhaka, 171° in New York and 177° in Cairo. The corrected formula now matches every
+  reference bearing to within 0.05°.
+- Kaaba coordinates corrected from `21.3891, 39.8579` to `21.4225, 39.8262`, roughly
+  4 km off the actual position of the Masjid al-Haram.
+- The loading screen was titled "Tasbih" on the Qibla screen.
+
+### Added
+
+- **A working compass.** The screen previously rendered a static image and the text
+  "Coming Soon"; the calculated bearing was only ever written to `console.log`, and the
+  Kaaba marker was commented out with a hardcoded `rotate-[150deg]`.
+  - Live device heading via `deviceorientationabsolute`, falling back to
+    `deviceorientation`.
+  - The dial counter-rotates so north stays north, and the Kaaba marker tracks the
+    device.
+  - Numeric readout (e.g. `277.6° W`) and a "You are facing the Qibla" cue within 5°.
+- iOS 13+ permission gate — `DeviceOrientationEvent.requestPermission()` must be called
+  from a user gesture, so an "Enable compass" button is shown on iOS.
+- Graceful degradation when no magnetometer is present: after a 2.5s timeout the screen
+  switches to a static bearing with instructions to align to north manually.
+- Last known coordinates cached, so the screen works offline and when location permission
+  is denied instead of showing a dead error state.
+- `src/helpers/qibla.js` — bearing maths extracted and unit-checkable.
+- `npm run check:qibla` — 27 regression checks against published Qibla bearings for seven
+  cities, polar edge cases, orientation-event parsing and alignment maths.
+
 ## [2.1.0] - 2026-08-10
 
 > Requires backend **1.2.0** or later. `data.tasbih` is now a JSON array rather than a
