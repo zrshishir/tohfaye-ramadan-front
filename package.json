@@ -1,12 +1,13 @@
 {
   "name": "prayer-pulse",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "check:qibla": "node scripts/qibla-check.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^5.7.0",

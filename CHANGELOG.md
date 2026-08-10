@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.0] - 2026-08-10
+
+### Fixed
+
+- **The Qibla bearing was wrong everywhere on earth.** `KiblaCompass.vue` passed
+  **degrees** into `Math.sin()` / `Math.cos()`, which take **radians**. Measured against
+  published Qibla directions the old code was off by 12° in Jakarta, 31° in Sydney, 119°
+  in Dhaka, 171° in New York and 177° in Cairo. The corrected formula now matches every
+  reference bearing to within 0.05°.
+- Kaaba coordinates corrected from `21.3891, 39.8579` to `21.4225, 39.8262`, roughly
+  4 km off the actual position of the Masjid al-Haram.
+- The loading screen was titled "Tasbih" on the Qibla screen.
+
+### Added
+
+- **A working compass.** The screen previously rendered a static image and the text
+  "Coming Soon"; the calculated bearing was only ever written to `console.log`, and the
+  Kaaba marker was commented out with a hardcoded `rotate-[150deg]`.
+  - Live device heading via `deviceorientationabsolute`, falling back to
+    `deviceorientation`.
+  - The dial counter-rotates so north stays north, and the Kaaba marker tracks the
+    device.
+  - Numeric readout (e.g. `277.6° W`) and a "You are facing the Qibla" cue within 5°.
+- iOS 13+ permission gate — `DeviceOrientationEvent.requestPermission()` must be called
+  from a user gesture, so an "Enable compass" button is shown on iOS.
+- Graceful degradation when no magnetometer is present: after a 2.5s timeout the screen
+  switches to a static bearing with instructions to align to north manually.
+- Last known coordinates cached, so the screen works offline and when location permission
+  is denied instead of showing a dead error state.
+- `src/helpers/qibla.js` — bearing maths extracted and unit-checkable.
+- `npm run check:qibla` — 27 regression checks against published Qibla bearings for seven
+  cities, polar edge cases, orientation-event parsing and alignment maths.
+
 ## [2.1.0] - 2026-08-10
 
 > Requires backend **1.2.0** or later. `data.tasbih` is now a JSON array rather than a
