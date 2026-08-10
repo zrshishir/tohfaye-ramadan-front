@@ -14,7 +14,13 @@ See [Vite Configuration Reference](https://vitejs.dev/config/).
 
 ```sh
 npm install
+cp .env.example .env
 ```
+
+`.env` is git-ignored. Set `VITE_BASE_URL` to the API you want to build against — it must
+include the `/api` suffix. Vite inlines env values at **build** time, so after changing
+`.env` you must rebuild (`npm run build`) and re-sync the native apps (`./update_mobile_app.sh`);
+restarting the app alone will not pick up the new value.
 
 ### Compile and Hot-Reload for Development
 
