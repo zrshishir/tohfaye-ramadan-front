@@ -1,45 +1,72 @@
+<script>
+  import axios from 'axios';
+  import TheHeader from '@/components/TheHeader.vue';
+  import TheLoading from '@/components/TheLoading.vue';
+  import TheError from '@/components/TheError.vue';
+  import TheNoData from '@/components/TheNoData.vue';
+
+  export default {
+    components: {
+      TheHeader,
+      TheLoading,
+      TheError,
+      TheNoData
+    },
+    data() {
+      return {
+        masalas: [],
+        loading: false,
+        error: false,
+      }
+    },
+    methods: {
+      async fetchData() {
+        this.loading = true;
+
+        try {
+          const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/masala`);
+
+          // The API answers 204 with an empty body when nothing is published,
+          // so response.data is an empty string rather than an envelope.
+          this.masalas = response.status === 204 ? [] : (response.data?.data ?? []);
+          this.error = false;
+        } catch (error) {
+          this.error = true;
+          console.error('Error fetching data:', error);
+        } finally {
+          this.loading = false;
+        }
+      }
+    },
+    mounted() {
+      this.fetchData();
+    }
+  }
+</script>
+
 <template>
-  <div class="min-h-screen bg-sand text-primary p-4 md:p-8">
-    <div class="max-w-4xl mx-auto">
-      <h1 class="text-3xl font-bold text-center mb-8 gold-text">Islamic Mas-ala</h1>
-      <div v-if="loading" class="flex justify-center items-center h-64">
-        <div class="dot w-8 h-8 bg-secondary rounded-full"></div>
-      </div>
-      <div v-else-if="error" class="text-red-500 text-center">
-        Failed to load Mas-ala. Please try again.
-      </div>
-      <div v-else class="grid gap-6">
-        <div v-for="item in masalas" :key="item.id" class="glass-panel p-6">
-          <h2 class="text-xl font-bold mb-3 text-primary">{{ item.question }}</h2>
-          <p class="text-md leading-relaxed text-darkGreen">
-            {{ item.answer }}
-          </p>
+  <the-loading v-if="loading">
+    <div class="page-title text-center">
+      <img class="w-20 m-auto" src="../assets/images/icons/masala.svg" alt="Masa-el">
+      <h1 class="text-2xl font-bold mt-3">Masa-el</h1>
+    </div>
+  </the-loading>
+  <TheError v-if="error"/>
+  <template v-if="!loading">
+    <TheHeader title="Masa-el"/>
+    <TheNoData v-if="!error && masalas.length === 0"/>
+    <div v-if="masalas.length" class="masala-area px-5 py-4">
+      <div class="masala-list grid gap-4">
+        <div v-for="masala in masalas" :key="masala.id" class="masala bg-white shadow-3xl rounded-2xl overflow-hidden">
+          <div class="masala-content p-4">
+            <h3 class="text-lg font-bold">{{ masala.title }}</h3>
+            <p class="text-base mt-2 leading-relaxed">{{ masala.description }}</p>
+          </div>
+          <div v-if="masala.reference" class="masala-reference bg-primary p-3">
+            <p class="text-white text-sm text-right">— {{ masala.reference }}</p>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </template>
 </template>
-
-<script>
-import axios from 'axios';
-
-export default {
-  data() {
-    return {
-      masalas: [],
-      loading: true,
-      error: false
-    };
-  },
-  async mounted() {
-    try {
-      const response = await axios.get('/api/masala');
-      this.masalas = response.data;
-    } catch (e) {
-      this.error = true;
-    } finally {
-      this.loading = false;
-    }
-  }
-}
-</script>
