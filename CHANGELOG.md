@@ -7,6 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-08-10
+
+> Requires backend **1.2.0** or later. `data.tasbih` is now a JSON array rather than a
+> JSON-encoded string.
+
+### Fixed
+
+- **Tasbih counts were never saved.** Nothing was ever written back — not to the API, not
+  even to `localStorage` after a tap — so every count was lost the moment the screen was
+  closed. Counters now write through to `localStorage` immediately and sync to
+  `PUT /api/tasbih/{userId}` on a 1.5s debounce, with a flush on leaving the screen.
+- `counterHandler()` read `this.lastResetTimestamp`, `this.currentMonth` and
+  `this.currentYear`, none of which were declared in `data()`. Consequences:
+  - The daily reset compared against `undefined`, producing `NaN`, so `today_count` never
+    reset — it only ever grew.
+  - `monthly_count` and `yearly_count` were zeroed on the **first tap of every visit**,
+    so they were effectively pinned at 1.
+- The screen cached the tasbih list in `localStorage` and, once cached, **never called the
+  API again** — server-side changes to the dhikr list could never reach the device.
+- `JSON.parse()` was called on `data.tasbih`, which is now a real array.
+- `localStorage.setItem('tasbih', <array>)` would have stringified to
+  `"[object Object],..."`. The cache is now a properly serialised object, and a legacy
+  value under the old key is detected and discarded.
+- `TheNoData` was gated on `tasbihs === 0`, which an array can never equal, so the empty
+  state never rendered.
+
+### Changed
+
+- Period resets now use calendar boundaries (new day / month / year) instead of a rolling
+  24-hour delta, and are re-checked before every tap, so a session left open overnight
+  rolls over correctly.
+- The dhikr list (text, `reset_on`) comes from the server; counters are owned by the
+  device and merged in by `text_en`. A dhikr added in admin now appears without wiping
+  local progress.
+- The counter wrap is guarded with `reset_on > 0`.
+- Fetch failures fall back to cached counters rather than showing the error popup; a
+  `404` renders `TheNoData` instead of an error.
+
 ## [2.0.1] - 2026-08-10
 
 ### Fixed
