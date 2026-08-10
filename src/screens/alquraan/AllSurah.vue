@@ -1,5 +1,5 @@
 <script>
-  import axios from 'axios';
+  import api from '@/services/api';
   import { RouterLink } from 'vue-router';
   import TheHeader from '@/components/TheHeader.vue';
   import TheLoading from '@/components/TheLoading.vue';
@@ -31,7 +31,7 @@
           this.loading = false;
         } else {
           try {
-            const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/sura`);            
+            const response = await api.get('/sura');            
             this.surahs = response.data?.data;
             localStorage.setItem('surah', JSON.stringify(response.data?.data));            
           } catch (error) {

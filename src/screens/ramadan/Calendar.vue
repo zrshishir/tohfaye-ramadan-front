@@ -1,5 +1,5 @@
 <script>
-  import axios from 'axios';
+  import api from '@/services/api';
   import moment from 'moment';
   import { RouterLink } from 'vue-router';
   import TheHeader from '@/components/TheHeader.vue';
@@ -33,7 +33,7 @@
           this.error = false;
         } else {
           try {
-            const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/ramazan-calendar`);
+            const response = await api.get('/ramazan-calendar');
             this.ramadanCalender = response.data?.data?.permanent_calendars;
             localStorage.setItem('Ramadan-Calender', JSON.stringify(this.ramadanCalender));
             this.loading = false;

@@ -1,6 +1,6 @@
 
 <script>
-  import axios from 'axios';
+  import api from '@/services/api';
   import Loading from '@/components/Loading.vue';
   import NextSalat from '@/components/home/NextSalat.vue';
   import HeaderArea from '@/components/home/HeaderArea.vue';
@@ -47,7 +47,7 @@
           this.loading = false;
         } else {
           try {
-            const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/permanent-calendar`);
+            const response = await api.post('/permanent-calendar');
             this.calendar = response.data?.data?.permanent_calendars?.data || [];
             
             localStorage.setItem('calendarData', JSON.stringify(this.calendar));

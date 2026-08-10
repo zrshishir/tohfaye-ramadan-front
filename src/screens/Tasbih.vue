@@ -1,5 +1,5 @@
 <script>
-  import axios from 'axios';
+  import api from '@/services/api';
   import TheHeader from '@/components/TheHeader.vue';
   import TheLoading from '@/components/TheLoading.vue';
   import TheError from '@/components/TheError.vue';
@@ -78,7 +78,7 @@
         }
 
         try {
-          const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/tasbih`, {
+          const response = await api.get('/tasbih', {
             params: { user_id: USER_ID },
           });
 
@@ -180,7 +180,7 @@
         if (!this.tasbihs.length) return;
 
         try {
-          await axios.put(`${import.meta.env.VITE_BASE_URL}/tasbih/${USER_ID}`, {
+          await api.put(`/tasbih/${USER_ID}`, {
             tasbih: this.tasbihs,
           });
         } catch (error) {
