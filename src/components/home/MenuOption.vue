@@ -33,5 +33,13 @@
       <img class="w-7 h-7 object-contain object-center" src="@/assets/images/icons/asma-ul-husna.svg" alt="mosque">
       <p class="pt-2 text-center">Asma-Ul-Husna</p>
     </RouterLink>
+    <RouterLink to="/hadith" class="option flex flex-col items-center justify-center">
+      <img class="w-7 h-7 object-contain object-center" src="@/assets/images/icons/hadith.svg" alt="hadith">
+      <p class="pt-2 text-center">Hadith</p>
+    </RouterLink>
+    <RouterLink to="/masala" class="option flex flex-col items-center justify-center">
+      <img class="w-7 h-7 object-contain object-center" src="@/assets/images/icons/masala.svg" alt="masala">
+      <p class="pt-2 text-center">Masa-el</p>
+    </RouterLink>
   </div>
 </template>
