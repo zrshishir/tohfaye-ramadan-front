@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0] - 2026-08-10
+
+> Requires backend **2.0.0**, which restructures the hadith tables and changes
+> `GET /api/hadith` completely. Will not work against an older backend.
+
+### Added
+
+- **The Siha Sittah hadith library** — 34,455 hadiths across six collections, browsable
+  and searchable. `/hadith` is now a nested section rather than a single flat list:
+
+  | Route | Screen |
+  |---|---|
+  | `/hadith` | the six collections, with a search box |
+  | `/hadith/:bookId` | chapters of a collection |
+  | `/hadith/:bookId/:chapterId` | paginated hadiths in a chapter |
+  | `/hadith/search?q=` | paginated search results |
+  | `/hadith/detail/:id` | one hadith in Arabic, Bangla and English |
+
+- Search across the Bangla and English text, with the two-character minimum the API
+  enforces reflected in the input's disabled state.
+- Pagination controls matching the Surah reader — Previous / Next with the page synced
+  into the route query, so a reload restores position.
+- The single-hadith screen shows Arabic right-to-left in its own card, then Bangla and
+  English, with the reference and grade in a footer.
+
+### Changed
+
+- `src/screens/Hadith.vue` (a flat list of two placeholder rows) is replaced by
+  `src/screens/hadith/` — `Books`, `Chapters`, `Hadiths` and `SingleHadith`.
+- Chapter and book headings prefer Bangla and fall back to English. The dataset ships
+  English chapter names in every edition, so in practice chapter names render in English —
+  the fallback is deliberate rather than a gap.
+- List rows preview Bangla, falling back to English then Arabic, truncated at 220
+  characters.
+
 ## [2.4.0] - 2026-08-10
 
 > Pairs with backend **1.3.0**, which fixes `GET /ramazan-calendar` (previously 500 on
