@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.3.0] - 2026-08-10
+
+### Added
+
+- `src/services/api.js` — a single shared axios instance. All 14 screens now import it
+  instead of constructing their own request with `import.meta.env.VITE_BASE_URL`
+  interpolated inline at 15 separate call sites.
+  - `baseURL` set once, so a relative path can no longer be used by mistake. That is
+    exactly how the Hadith and Masala screens shipped broken: a relative URL resolves
+    against `capacitor://localhost` in a native build.
+  - 15s timeout — there was previously none, so a hung request left a screen spinning
+    forever.
+  - Response interceptor normalising failures to `error.status` and `error.appMessage`,
+    covering HTTP errors, timeouts and unreachable-host separately.
+  - `unwrap()` helper handling the `204`-with-empty-body case alongside the
+    `{status, statusCode, message, data}` envelope.
+- A loud console error when `VITE_BASE_URL` is unset, naming the `cp .env.example .env`
+  step and the fact that Vite inlines env values at build time.
+
+### Fixed
+
+- Prayer-time screens crashed when the calendar API returned no data. `times.find(...)`
+  and `result.find(...)` were called on `undefined`, and `TomorrowSchedule` destructured
+  `.split()` off an undefined `start_time`, taking down the home screen. Five files now
+  degrade to an empty view instead.
+
 ## [2.2.0] - 2026-08-10
 
 ### Fixed

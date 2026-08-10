@@ -1,5 +1,5 @@
 <script>
-  import axios from 'axios';
+  import api from '@/services/api';
   import TheHeader from '@/components/TheHeader.vue';
   import TheLoading from '@/components/TheLoading.vue';
   import TheNoData from '@/components/TheNoData.vue';
@@ -24,7 +24,7 @@
         const targetPage = page || parseInt(this.$route.query.page) || 1;
 
         try {
-          const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/ayat/${parseInt(this.$route?.params?.id)}?page=${targetPage}`);          
+          const response = await api.get(`/ayat/${parseInt(this.$route?.params?.id)}?page=${targetPage}`);          
           
           const responseData = response.data?.data;
           let newAyats = [];

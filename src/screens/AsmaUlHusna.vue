@@ -1,5 +1,5 @@
 <script>
-  import axios from 'axios';
+  import api from '@/services/api';
   import TheHeader from '@/components/TheHeader.vue';
   import TheLoading from '@/components/TheLoading.vue';
   import TheError from '@/components/TheError.vue';
@@ -30,7 +30,7 @@ import TheNoData from '@/components/TheNoData.vue';
           this.error = false;
         } else {
           try {
-            const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/asmaul-husna`);
+            const response = await api.get('/asmaul-husna');
             this.asmaulhusna = response.data?.data;
             localStorage.setItem('Asma-Ul-Husna', JSON.stringify(response.data?.data));
             this.loading = false;

@@ -1,5 +1,5 @@
 <script>
-  import axios from 'axios';
+  import api from '@/services/api';
   import { RouterLink } from 'vue-router';
   import TheHeader from '@/components/TheHeader.vue';
   import TheLoading from '@/components/TheLoading.vue';
@@ -30,7 +30,7 @@
         this.loading = true;
 
         try {
-          const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/doa/${this.$route?.params?.id || 1}`);
+          const response = await api.get(`/doa/${this.$route?.params?.id || 1}`);
           localStorage.setItem('Category-Duas', JSON.stringify(response.data?.data));
           this.categoryDuas = response.data?.data;
           this.loading = false;
