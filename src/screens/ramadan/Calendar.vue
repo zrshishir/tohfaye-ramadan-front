@@ -111,7 +111,7 @@
             <div class="text-center py-3 font-medium border-r-2 border-gainsboro">{{ ramadan?.day }} {{ getDayWithMonthName(ramadan?.day, ramadan?.month_id) }}</div>
             <div class="text-center py-3 font-medium border-r-2 border-gainsboro">{{ index + 1 }}</div>
             <div class="text-center py-3 font-medium border-r-2 border-gainsboro">{{ ramadan?.sehri?.end_time }}</div>
-            <div class="text-center py-3 font-medium">{{ ramadan?.magrib?.start_time }}</div>
+            <div class="text-center py-3 font-medium">{{ (ramadan?.iftar ?? ramadan?.magrib)?.start_time }}</div>
           </RouterLink>
         </div>
       </div>

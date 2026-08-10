@@ -46,11 +46,11 @@
         this.timeDifferenceSehri = { hours, minutes };
       },
       calculateTimeDifferenceIftar() {
-        if (!this.tomorrow?.ifter?.start_time) {
+        if (!this.tomorrow?.iftar?.start_time) {
           this.timeDifferenceIftar = { hours: 0, minutes: 0 };
           return;
         }
-        const [hour, minute] = this.tomorrow.ifter.start_time.split(/:| /);
+        const [hour, minute] = this.tomorrow.iftar.start_time.split(/:| /);
         const currentTime = new Date();
         const tomorrowDate = new Date(currentTime);
         tomorrowDate.setDate(currentTime.getDate() + 1);
@@ -79,7 +79,7 @@
           </p>
           <p class="flex items-center justify-between">
             <span class="font-light">Iftar</span>
-            <span>{{ tomorrow?.ifter?.start_time }} - {{ timeDifferenceIftar?.hours }} h {{ timeDifferenceIftar?.minutes <= 9 ? "0" : "" }}{{ timeDifferenceIftar?.minutes }} m (Left)</span>
+            <span>{{ tomorrow?.iftar?.start_time }} - {{ timeDifferenceIftar?.hours }} h {{ timeDifferenceIftar?.minutes <= 9 ? "0" : "" }}{{ timeDifferenceIftar?.minutes }} m (Left)</span>
           </p>
         </div>
         <!-- <div class="next text-center pt-3">

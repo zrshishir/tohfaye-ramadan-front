@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.4.0] - 2026-08-10
+
+> Pairs with backend **1.3.0**, which fixes `GET /ramazan-calendar` (previously 500 on
+> every request) and adds a derived `iftar` to all calendar responses. Falls back
+> gracefully to `magrib` against an older backend.
+
+### Fixed
+
+- **Iftar times were showing the Magrib time.** Every screen read `magrib.start_time` as
+  a stand-in for iftar, which carries the mazhab's `magrib_time` offset rather than its
+  `iftar_time`. The two are both 15 minutes in the seeded data, so the values coincided —
+  but they diverge for any mazhab that configures them apart. All four call sites now use
+  the API's derived `iftar`, with `magrib` as a fallback.
+
+### Changed
+
+- `ifter` renamed to `iftar` in `Home.vue` and `TomorrowSchedule.vue`. It was a
+  locally-constructed alias (`ifter: tomorrowDaySalat[0]?.magrib`), so nothing was broken
+  by the misspelling — but it obscured that the value was Magrib rather than iftar.
+
 ## [2.3.0] - 2026-08-10
 
 ### Added
