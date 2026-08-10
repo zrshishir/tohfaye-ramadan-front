@@ -30,7 +30,7 @@
           const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/permanent-calendar`);
           const times = response.data?.data?.permanent_calendars?.data;
           
-          const todayData = times.find(item => item.day === today);
+          const todayData = times ? times.find(item => item.day === today) : null;
           this.time = todayData;
         } catch (error) {
           this.loading = false;

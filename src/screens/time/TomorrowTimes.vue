@@ -35,7 +35,7 @@
           const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/permanent-calendar`);
           const times = response.data?.data?.permanent_calendars?.data;
           
-          const tommorrowData = times.find(item => item.day === tommorrow);
+          const tommorrowData = times ? times.find(item => item.day === tommorrow) : null;
           this.time = tommorrowData;
         } catch (error) {
           this.loading = false;

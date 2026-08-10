@@ -48,7 +48,7 @@
         } else {
           try {
             const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/permanent-calendar`);
-            this.calendar = response.data?.data?.permanent_calendars?.data;
+            this.calendar = response.data?.data?.permanent_calendars?.data || [];
             
             localStorage.setItem('calendarData', JSON.stringify(this.calendar));
             localStorage.setItem('calendarTimestamp', this.currentTime.toString());

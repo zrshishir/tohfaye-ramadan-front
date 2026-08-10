@@ -33,13 +33,15 @@
         try {
           const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/permanent-calendar`);
           const result = response.data?.data?.permanent_calendars?.data;
-          for (let i = 0; i < 7; i++) {
-            const nextDay = new Date(this.currentDate);
-            nextDay.setDate(this.currentDate.getDate() + i + 1); 
-            const formattedDate = this.formatDate(nextDay);
-            const dayOfMonth = String(nextDay.getDate());
-            const nextDayData = result.find(item => item.day === dayOfMonth);
-            this.times.push({ date: formattedDate, data: nextDayData })
+          if (result) {
+            for (let i = 0; i < 7; i++) {
+              const nextDay = new Date(this.currentDate);
+              nextDay.setDate(this.currentDate.getDate() + i + 1); 
+              const formattedDate = this.formatDate(nextDay);
+              const dayOfMonth = String(nextDay.getDate());
+              const nextDayData = result.find(item => item.day === dayOfMonth);
+              this.times.push({ date: formattedDate, data: nextDayData })
+            }
           }
         } catch (error) {
           this.loading = false;
