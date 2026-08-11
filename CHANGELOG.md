@@ -20,8 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   like a backend outage rather than a missing file. There was a runtime `console.error`,
   but nothing stopped the build.
 
-  Only enforced for `build`; `npm run dev` still works without a `.env`, falling back to
-  the dev proxy.
+  Enforced for `npm run dev` as well. The dev proxy only forwards paths beginning `/api`,
+  but with no `baseURL` axios issues relative requests like `/permanent-calendar`, which
+  the proxy never sees — so the dev server failed in exactly the same way, screen by
+  screen, with an error dialog and no data.
 
 
 ## [3.7.0] - 2026-08-11
