@@ -40,3 +40,6 @@ jobs:
 
       - name: Prayer reminder scheduling checks
         run: npm run check:notifications
+
+      - name: Cache layer checks
+        run: npm run check:cache

@@ -3,6 +3,7 @@
   import api from '@/services/api';
   import { calendarParams } from '@/services/settings';
   import { reschedule } from '@/services/notifications';
+  import { cached, TTL } from '@/services/cache';
   import Loading from '@/components/Loading.vue';
   import NextSalat from '@/components/home/NextSalat.vue';
   import HeaderArea from '@/components/home/HeaderArea.vue';
@@ -31,8 +32,7 @@
         calendar: [],
         loading: false,
         currentTime: new Date().getTime(),
-        storedData: localStorage.getItem('calendarData'),
-        storedTimestamp: localStorage.getItem('calendarTimestamp'),
+        showingStale: false,
         leftTime: null,
         nextSalat: null,
         intervalId: null,
@@ -44,18 +44,18 @@
     methods: {    
       async fetchCalenderData() {
         this.loading = true;
-        if (this.storedData) {
-          this.calendar = JSON.parse(this.storedData);
-          this.loading = false;
-        } else {
+        {
           try {
-            const response = await api.post('/permanent-calendar', calendarParams());
-            this.calendar = response.data?.data?.permanent_calendars?.data || [];
-            
-            localStorage.setItem('calendarData', JSON.stringify(this.calendar));
-            localStorage.setItem('calendarTimestamp', this.currentTime.toString());
+            // Expires after a day: the calendar is dated content, and the previous
+            // cache never expired at all — a device could show last month's times.
+            const { value, stale } = await cached('calendar', TTL.calendar, async () => {
+              const response = await api.post('/permanent-calendar', calendarParams());
+              return response.data?.data?.permanent_calendars?.data || [];
+            });
+
+            this.calendar = value;
+            this.showingStale = stale;
           } catch (error) {
-            this.loading = false;
             console.error('Error fetching data:', error);
           } finally {
             this.loading = false;

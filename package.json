@@ -1,6 +1,6 @@
 {
   "name": "prayer-pulse",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "check:qibla": "node scripts/qibla-check.mjs",
-    "check:notifications": "node --import ./scripts/register-hook.mjs scripts/notifications-check.mjs"
+    "check:notifications": "node --import ./scripts/register-hook.mjs scripts/notifications-check.mjs",
+    "check:cache": "node --import ./scripts/register-hook.mjs scripts/cache-check.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^5.7.0",

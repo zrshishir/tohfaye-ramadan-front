@@ -1,6 +1,7 @@
 <script>
   import api, { unwrap } from '@/services/api';
   import { getSettings, saveSettings, clearDistrictScopedCaches } from '@/services/settings';
+  import { readCache } from '@/services/cache';
   import {
     NOTIFIABLE, getNotificationSettings, saveNotificationSettings,
     requestPermission, reschedule, cancelAll,
@@ -89,11 +90,8 @@
       // --------------------------------------------------------- notifications
 
       cachedCalendar() {
-        try {
-          return JSON.parse(localStorage.getItem('calendarData') ?? '[]');
-        } catch {
-          return [];
-        }
+        // Stale is fine here: reminders are rebuilt from whatever the app last saw.
+        return readCache('calendar', { allowStale: true }) ?? [];
       },
 
       async applyNotificationSettings() {

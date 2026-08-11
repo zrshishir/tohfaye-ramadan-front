@@ -1,5 +1,6 @@
 <script>
   import api from '@/services/api';
+  import { cached, TTL } from '@/services/cache';
   import { RouterLink } from 'vue-router';
   import TheHeader from '@/components/TheHeader.vue';
   import TheLoading from '@/components/TheLoading.vue';
@@ -19,27 +20,23 @@
         loading: false,
         isModalOpen: false,
         selectedOption: 'Select Your Surah',
-        storedSurah: localStorage.getItem('surah'),
+
       }
     },
     methods: {
       async fetchData() {
         this.loading = true;
 
-        if (this.storedSurah) {
-          this.surahs = JSON.parse(this.storedSurah);
+        try {
+          const { value } = await cached('suras', TTL.suras, async () => {
+            const response = await api.get('/sura');
+            return response.data?.data ?? [];
+          });
+          this.surahs = value;
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        } finally {
           this.loading = false;
-        } else {
-          try {
-            const response = await api.get('/sura');            
-            this.surahs = response.data?.data;
-            localStorage.setItem('surah', JSON.stringify(response.data?.data));            
-          } catch (error) {
-            this.loading = false;
-            console.error('Error fetching data:', error);
-          } finally {
-            this.loading = false;
-          }
         }
       },
       toggleSearch() {
