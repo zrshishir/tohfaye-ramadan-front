@@ -204,9 +204,9 @@
       <div class="flex flex-wrap items-center gap-2">
         <button
           v-for="option in [
-            { key: 'showBangla', label: 'Bangla' },
+            { key: 'showPronunciation', label: 'উচ্চারণ' },
+            { key: 'showBangla', label: 'অর্থ' },
             { key: 'showEnglish', label: 'English' },
-            { key: 'showMeaning', label: 'Meaning' },
           ]"
           :key="option.key"
           @click="toggleTranslation(option.key)"
@@ -249,14 +249,25 @@
 
           <p :class="[font.arabic, 'w-fit text-right leading-loose']" dir="rtl">{{ data?.arabic_text }}</p>
         </div>
-        <div v-if="reader.showBangla && data?.bangla_text" class="ayat-bn p-3 border-b border-primary">
-          <p :class="font.translation">{{ data?.bangla_text }}</p>
-        </div>
-        <div v-if="reader.showEnglish && data?.english_text" class="ayat-mn p-3 border-b border-primary">
+        <!--
+          Labels follow the convention the Dua screens already use:
+            english_text = Latin pronunciation   meaning = Bangla meaning
+          `bangla_text` should hold the Bangla uccharon, but the ayat seeder fills it
+          from the same Bangla translation as `meaning`, so it is byte-identical to it
+          in all 6,236 rows. It is left out rather than shown twice under two headings.
+        -->
+        <div v-if="reader.showPronunciation && data?.english_text" class="ayat-pr p-3 border-b border-primary">
+          <p class="text-xs text-darkGreen pb-1 font-bold">উচ্চারণ</p>
           <p :class="font.translation">{{ data?.english_text }}</p>
         </div>
-        <div v-if="reader.showMeaning && data?.meaning" class="ayat-mn p-3">
+        <div v-if="reader.showBangla && data?.meaning" class="ayat-bn p-3 border-b border-primary">
+          <p class="text-xs text-darkGreen pb-1 font-bold">অর্থ</p>
           <p :class="font.translation">{{ data?.meaning }}</p>
+        </div>
+        <!-- The English translation was imported into `notes` and never displayed. -->
+        <div v-if="reader.showEnglish && data?.notes" class="ayat-en p-3">
+          <p class="text-xs text-darkGreen pb-1 font-bold">English</p>
+          <p :class="font.translation">{{ data?.notes }}</p>
         </div>
       </div> 
       <div v-if="lastPage > 1" class="flex items-center justify-between mt-6 mb-8">

@@ -16,9 +16,9 @@ export const FONT_SIZES = [
 
 const defaults = () => ({
   fontSize: 'md',
-  showBangla: true,
-  showEnglish: true,
-  showMeaning: false,
+  showPronunciation: true,   // english_text — Latin pronunciation
+  showBangla: true,          // meaning — Bangla meaning
+  showEnglish: false,        // notes — English meaning
   lastRead: null,      // { suraId, suraName, ayatNo, page, at }
   bookmarks: [],       // [{ ayatId, suraId, suraName, ayatNo, page, at }]
 });

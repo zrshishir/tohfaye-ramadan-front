@@ -11,6 +11,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The Quran reader showed the same Bangla text twice and hid the English
+  translation.** `bangla_text` and `meaning` are byte-identical in all 6,236 ayats, so
+  the "Bangla" and "Meaning" toggles rendered the same string — while the English
+  translation sat unused in `notes` and was never displayed.
+
+  The reader now follows the convention the Dua screens already use:
+
+  | Line | Field | Label |
+  |---|---|---|
+  | Pronunciation | `english_text` | উচ্চারণ |
+  | Bangla meaning | `meaning` | অর্থ |
+  | English meaning | `notes` | English |
+
+  `bangla_text` is left out until it actually holds the Bangla uccharon — see the note
+  below.
+
 - **Iftar appeared as the next salat.** The next-prayer rotation iterated *every* key on
   a calendar row and excluded a handful by name, so the derived `iftar` field added in
   3.4.0 joined the rotation automatically — as had `sehri`, `sunrise` and `ishraq`. It
@@ -30,6 +46,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **The Hadith and Masa-el menu icons were 6-byte corrupt files** and rendered as broken
   images. Rewritten.
+
+### Known data gap
+
+`ayats.bangla_text` should hold the **Bangla uccharon**, as it does for duas. Backend
+commit `225c341` rewrote the ayat seeder to fetch from alquran.cloud and mapped both
+`bangla_text` and `meaning` to the same `bn.bengali` translation, so the pronunciation
+was lost across all 6,236 rows. alquran.cloud publishes no Bengali transliteration
+edition, so restoring it needs a separate source.
 
 
 ## [3.7.1] - 2026-08-11
