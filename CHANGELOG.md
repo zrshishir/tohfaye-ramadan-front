@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.7.1] - 2026-08-11
+
+### Fixed
+
+- **`npm run build` now fails when `VITE_BASE_URL` is unset**, instead of producing a
+  bundle with no API URL compiled in.
+
+  `.env` became git-ignored in 2.0.0 and Vite inlines env values at build time, so a
+  build without one succeeded and shipped an app where every request silently went
+  nowhere. The screens render, the menu works, and no data ever arrives — which looks
+  like a backend outage rather than a missing file. There was a runtime `console.error`,
+  but nothing stopped the build.
+
+  Only enforced for `build`; `npm run dev` still works without a `.env`, falling back to
+  the dev proxy.
+
+
 ## [3.7.0] - 2026-08-11
 
 > Requires backend **2.8.0**.
