@@ -6,6 +6,7 @@
     NOTIFIABLE, getNotificationSettings, saveNotificationSettings,
     requestPermission, reschedule, cancelAll,
   } from '@/services/notifications';
+  import { RouterLink } from 'vue-router';
   import TheHeader from '@/components/TheHeader.vue';
   import TheLoading from '@/components/TheLoading.vue';
   import TheError from '@/components/TheError.vue';
@@ -259,6 +260,27 @@
             {{ pendingCount }} reminders scheduled for the next 7 days.
           </p>
         </template>
+      </div>
+
+      <div class="links mt-4 mb-2">
+        <RouterLink
+          to="/account"
+          class="block p-4 bg-white shadow-3xl rounded-2xl mb-3 flex items-center justify-between"
+        >
+          <div>
+            <p class="text-base font-bold">Account</p>
+            <p class="text-xs text-darkGreen">Optional — syncs bookmarks and tasbih counts</p>
+          </div>
+          <span class="text-primary">&rsaquo;</span>
+        </RouterLink>
+
+        <RouterLink
+          to="/bookmarks"
+          class="block p-4 bg-white shadow-3xl rounded-2xl flex items-center justify-between"
+        >
+          <p class="text-base font-bold">Bookmarks</p>
+          <span class="text-primary">&rsaquo;</span>
+        </RouterLink>
       </div>
 
       <p class="text-xs text-darkGreen text-center pt-6 pb-8">
