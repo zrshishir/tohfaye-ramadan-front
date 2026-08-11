@@ -1,5 +1,6 @@
 <script>
   import api from '@/services/api';
+  import { calendarParams } from '@/services/settings';
   import TheHeader from '@/components/TheHeader.vue';
   import TheLoading from '@/components/TheLoading.vue';
   import TheError from '@/components/TheError.vue';
@@ -25,7 +26,7 @@ import TheNoData from '@/components/TheNoData.vue';
         this.loading = true;
 
         try {
-          const response = await api.get('/ramazan-calendar');
+          const response = await api.get('/ramazan-calendar', { params: calendarParams() });
           const result = response.data?.data?.permanent_calendars;
           const filterData = result.filter(data => data?.id === parseInt(this.$route?.params?.id));
 

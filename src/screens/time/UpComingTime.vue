@@ -1,5 +1,6 @@
 <script>
   import api from '@/services/api';
+  import { calendarParams } from '@/services/settings';
   import TheLoading from '@/components/TheLoading.vue';
   import TheHeader from '@/components/TheHeader.vue';
   import TheSchedule from '@/components/TheSchedule.vue';
@@ -31,7 +32,7 @@
       async getTomorrowTime(){
         this.loading = true;
         try {
-          const response = await api.post('/permanent-calendar');
+          const response = await api.post('/permanent-calendar', calendarParams());
           const result = response.data?.data?.permanent_calendars?.data;
           if (result) {
             for (let i = 0; i < 7; i++) {

@@ -1,6 +1,7 @@
 
 <script>
   import api from '@/services/api';
+  import { calendarParams } from '@/services/settings';
   import Loading from '@/components/Loading.vue';
   import NextSalat from '@/components/home/NextSalat.vue';
   import HeaderArea from '@/components/home/HeaderArea.vue';
@@ -47,7 +48,7 @@
           this.loading = false;
         } else {
           try {
-            const response = await api.post('/permanent-calendar');
+            const response = await api.post('/permanent-calendar', calendarParams());
             this.calendar = response.data?.data?.permanent_calendars?.data || [];
             
             localStorage.setItem('calendarData', JSON.stringify(this.calendar));

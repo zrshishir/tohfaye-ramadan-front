@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.1.0] - 2026-08-11
+
+> Pairs with backend **2.2.0** (district offsets) and **2.3.0** (the mazhab offset
+> correction). Degrades safely against an older backend: `district_id` is simply ignored.
+
+### Added
+
+- **A Settings screen** at `/settings`, reachable from the gear icon on the home header.
+  The icon existed but sat inside a commented-out block, so there was no way in.
+- Division → district picker covering all 64 districts. Sehri and iftar differ by up to
+  12 minutes across Bangladesh; every device previously received Dhaka's times.
+- `src/services/settings.js` — one place for stored settings and the
+  `calendarParams()` helper that all six calendar callers now use.
+- "Use Dhaka (default)" to clear the selection.
+
+### Fixed
+
+- Changing district now **clears the district-scoped caches** (`calendarData`,
+  `calendarTimestamp`, `Ramadan-Calender`). Without that the app would keep showing the
+  previous district's times indefinitely, since those caches are never invalidated.
+- `HeaderArea.getUserLocationPhone()` had no error handling around
+  `Geolocation.getCurrentPosition()`. Denying the location permission threw, leaving the
+  city label blank with no way to set it. It now falls back to the stored value.
+- The same method read `.long_name` directly off `address_components.find(...)`, which
+  throws a `TypeError` for any coordinate without a `locality` or
+  `administrative_area_level_1` — common outside city centres. Now optional-chained.
+- The home header shows the chosen district instead of the geocoded city, so the label
+  matches the times actually being displayed.
+
+### Not included
+
+No mazhab picker. The backend's mazhab offsets are all zero pending a verified Asr rule —
+the difference is the shadow ratio (Hanafi 2×, the others 1×), worth 30–90 minutes and
+seasonal, so it cannot be a fixed offset. A selector that changed nothing, or changed
+times by an unverified amount, would be worse than none.
+
+
 ## [3.0.0] - 2026-08-10
 
 > Requires backend **2.0.0**, which restructures the hadith tables and changes
