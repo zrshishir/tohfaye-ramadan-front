@@ -22,7 +22,10 @@ import CalendarVue from '@/screens/ramadan/Calendar.vue';
 import SingleDateVue from '@/screens/ramadan/SingleDate.vue';
 
 // New routes
-import MasalaVue from '@/screens/Masala.vue';
+import MasalaVue from '@/screens/masala/index.vue';
+import MasalaCategoriesVue from '@/screens/masala/Categories.vue';
+import MasalaListVue from '@/screens/masala/Masalas.vue';
+import SingleMasalaVue from '@/screens/masala/SingleMasala.vue';
 import SettingsVue from '@/screens/Settings.vue';
 
 // Hadith library
@@ -87,7 +90,17 @@ const vueRouter = createRouter({
         { path: ':bookId/:chapterId', component: HadithListVue },
       ],
     },
-    { path: '/masala', component: MasalaVue },
+    {
+      path: '/masala',
+      component: MasalaVue,
+      children: [
+        { path: '', name: 'masala', component: MasalaCategoriesVue },
+        // Static segments before :categoryId so they win the match.
+        { path: 'search', component: MasalaListVue },
+        { path: 'detail/:id', component: SingleMasalaVue },
+        { path: ':categoryId', component: MasalaListVue },
+      ],
+    },
     { path: '/settings', component: SettingsVue },
   ],
 });
