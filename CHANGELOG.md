@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.6.0] - 2026-08-11
+
+### Added
+
+- **Recitation audio.** Tapping an ayat number plays it. The audio URLs have been in the
+  `ayats` table since it was seeded — all 6,236 of them — but nothing ever used them.
+  One player is reused across ayats, so tapping another switches rather than overlapping,
+  and playback stops when the screen is left.
+- **Bookmarks.** A star on each ayat, stored with the sura and page so a bookmark can be
+  returned to.
+- **Continue reading.** The sura list offers a card back to wherever the reader last got
+  to; position is recorded on every page change.
+- **Reading options** — Arabic font size across four steps, and independent toggles for
+  the Bangla, English and meaning lines. Meaning is off by default, since most readers
+  want the translation rather than the word gloss.
+- `npm run check:reader` — 24 checks, wired into CI.
+
+### Changed
+
+- Arabic renders right-to-left with looser line height, and empty translation lines are
+  hidden rather than leaving blank panels.
+
+### Note
+
+Reader preferences, bookmarks and reading position live outside the cache layer, since
+they are user data rather than cached API content. A test asserts they survive
+`clearAll()` and the legacy purge.
+
+
 ## [3.5.0] - 2026-08-11
 
 > Requires backend **2.5.0**, which adds `GET /api/geocode`.
