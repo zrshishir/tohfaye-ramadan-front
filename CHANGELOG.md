@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.7.0] - 2026-08-11
+
+> Requires backend **2.8.0**.
+
+### Added
+
+- **Account screens** at `/account` — sign in, create an account, sign out, and delete
+  the account. Reachable from Settings. Signing in is optional and the screen says so:
+  everything works without one.
+- **A bookmarks screen** at `/bookmarks`. Bookmarks have been storable since the reader
+  landed but there was nowhere to browse them. Each row links back to the ayat it marks.
+- **Sync on sign-in.** Local bookmarks and tasbih counters are pushed, and the merged set
+  the server returns is adopted — so reading on a phone before signing up does not lose
+  those bookmarks, and signing in on a second device does not wipe the account.
+- The API client attaches the bearer token automatically, and **drops it on a 401**, so a
+  revoked or expired session returns the app to guest mode rather than retrying with a
+  token the server has rejected.
+
+### Note
+
+The token is stored separately from cached content, so clearing the cache never signs
+anyone out. Sync failures are logged rather than surfaced — failing to merge should not
+block signing in.
+
+
 ## [3.6.0] - 2026-08-11
 
 ### Added

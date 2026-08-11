@@ -27,6 +27,8 @@ import MasalaCategoriesVue from '@/screens/masala/Categories.vue';
 import MasalaListVue from '@/screens/masala/Masalas.vue';
 import SingleMasalaVue from '@/screens/masala/SingleMasala.vue';
 import SettingsVue from '@/screens/Settings.vue';
+import AccountVue from '@/screens/Account.vue';
+import BookmarksVue from '@/screens/Bookmarks.vue';
 
 // Hadith library
 import HadithVue from '@/screens/hadith/index.vue';
@@ -102,6 +104,8 @@ const vueRouter = createRouter({
       ],
     },
     { path: '/settings', component: SettingsVue },
+    { path: '/account', component: AccountVue },
+    { path: '/bookmarks', component: BookmarksVue },
   ],
 });
 

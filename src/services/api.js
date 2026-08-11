@@ -27,6 +27,22 @@ const api = axios.create({
   headers: { Accept: 'application/json' },
 });
 
+/**
+ * Attach the token when signed in.
+ *
+ * Read straight from localStorage rather than importing the auth service: auth.js
+ * imports this module, so importing it back would be circular.
+ */
+api.interceptors.request.use((config) => {
+  try {
+    const token = JSON.parse(localStorage.getItem('auth') ?? 'null')?.token;
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+  } catch {
+    // A corrupt auth entry just means an unauthenticated request.
+  }
+  return config;
+});
+
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -35,6 +51,14 @@ api.interceptors.response.use(
     if (error.response) {
       error.status = error.response.status;
       error.appMessage = error.response.data?.message || `Request failed (${error.status}).`;
+      // Validation errors carry per-field messages the auth screens surface.
+      error.errors = error.response.data?.errors ?? null;
+
+      // A rejected token means the session is over — drop it so the app returns to
+      // guest mode rather than retrying with something the server has revoked.
+      if (error.status === 401 && localStorage.getItem('auth')) {
+        localStorage.removeItem('auth');
+      }
     } else if (error.code === 'ECONNABORTED') {
       error.status = null;
       error.appMessage = 'The request timed out.';
