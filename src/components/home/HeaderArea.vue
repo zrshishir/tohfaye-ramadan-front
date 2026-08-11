@@ -2,13 +2,15 @@
   import { Geolocation } from '@capacitor/geolocation';
   import { Preferences } from '@capacitor/preferences';
   import { RouterLink } from 'vue-router';
-  import { getSettings } from '@/services/settings';
+  import { getSettings, saveSettings, clearDistrictScopedCaches } from '@/services/settings';
+  import api from '@/services/api';
 
   export default {
     data() {
       return {
         location: null,
         storedLocation: localStorage.getItem('location'),
+        suggestedDistrict: null,
         currentDate: new Date().toLocaleDateString('en-US', { timeZone: 'Asia/Dhaka', day: 'numeric', month: 'long', year: 'numeric' }),
       };
     },
@@ -47,24 +49,55 @@
           }
         } else {
           try {
-            const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${import.meta.env.VITE_BASE_KEY}`);
-            const data = await response.json();
+            // Proxied through our own API: the Maps key used to be inlined in this
+            // bundle, where anyone could extract it. It now lives only on the server.
+            const { data } = await api.get('/geocode', {
+              params: { lat: latitude, lng: longitude },
+            });
 
-            if (data.results && data.results.length > 0) {
-              // Not every coordinate has a locality or admin area — reaching straight
-              // for .long_name threw a TypeError outside city centres.
-              const parts = data.results[0].address_components ?? [];
-              const city = parts.find(c => c.types.includes('locality'))?.long_name ?? null;
-              const division = parts.find(c => c.types.includes('administrative_area_level_1'))?.long_name ?? null;
-              this.location = { lat: latitude, lng: longitude, city, division };
-              localStorage.setItem('location', JSON.stringify(this.location));
-              await Preferences.set({ key: 'location', value: JSON.stringify(this.location) });
+            const resolved = data?.data;
+            if (!resolved) return;
+
+            this.location = {
+              lat: latitude,
+              lng: longitude,
+              city: resolved.district?.name ?? resolved.city,
+              division: resolved.division,
+              districtId: resolved.district?.id ?? null,
+            };
+
+            localStorage.setItem('location', JSON.stringify(this.location));
+            await Preferences.set({ key: 'location', value: JSON.stringify(this.location) });
+
+            // The server matched a district, and that is what actually drives prayer
+            // times. Offer it rather than making the user hunt through the picker.
+            if (resolved.district?.id && !getSettings().districtId) {
+              this.suggestedDistrict = resolved.district;
             }
           } catch (error) {
-            console.error('Error fetching city:', error);
-          }            
+            console.error('Error resolving location:', error);
+          }
         }
-      }
+      },
+
+      acceptSuggestedDistrict() {
+        const district = this.suggestedDistrict;
+
+        saveSettings({
+          districtId: district.id,
+          districtName: district.name,
+          divisionName: district.division,
+        });
+
+        // Cached calendars were built for the previous district.
+        clearDistrictScopedCaches();
+
+        this.location = { ...this.location, city: district.name, division: district.division };
+        this.suggestedDistrict = null;
+
+        // Times have changed, so re-fetch rather than showing the old ones.
+        window.location.reload();
+      },
     },
     mounted() {
       this.getUserLocationPhone();
@@ -81,6 +114,26 @@
       </RouterLink>
     </div>
   </header>
+  <div
+    v-if="suggestedDistrict"
+    class="district-suggestion mt-3 p-3 bg-white shadow-3xl rounded-2xl flex items-center justify-between gap-3"
+  >
+    <p class="text-sm">
+      Show prayer times for <span class="font-bold">{{ suggestedDistrict.name }}</span>?
+    </p>
+    <div class="flex items-center gap-2 shrink-0">
+      <button @click="suggestedDistrict = null" class="text-sm px-3 py-1 text-primary">
+        Not now
+      </button>
+      <button
+        @click="acceptSuggestedDistrict"
+        class="text-sm px-3 py-1 bg-primary text-white rounded-full font-semibold"
+      >
+        Yes
+      </button>
+    </div>
+  </div>
+
   <!-- Calender Start -->
   <div class="calender mt-3 mb-6 flex items-center justify-between">
     <div class="date">
