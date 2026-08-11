@@ -1,6 +1,8 @@
 <script>
   import { Geolocation } from '@capacitor/geolocation';
   import { Preferences } from '@capacitor/preferences';
+  import { RouterLink } from 'vue-router';
+  import { getSettings } from '@/services/settings';
 
   export default {
     data() {
@@ -12,7 +14,26 @@
     },
     methods: {
       async getUserLocationPhone() {
-        const position = await Geolocation.getCurrentPosition();
+        // The chosen district is what actually drives prayer times; this label is
+        // cosmetic, so it must never take the screen down.
+        const chosen = getSettings();
+        if (chosen.districtName) {
+          this.location = { city: chosen.districtName, division: chosen.divisionName };
+          return;
+        }
+
+        let position;
+        try {
+          position = await Geolocation.getCurrentPosition();
+        } catch (error) {
+          // Permission denied or no fix — fall back to whatever was stored.
+          const stored = await Preferences.get({ key: 'location' }).catch(() => ({ value: null }));
+          const raw = stored.value ?? this.storedLocation;
+          if (raw) this.location = JSON.parse(raw);
+          console.error('Error getting location:', error);
+          return;
+        }
+
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
 
@@ -30,8 +51,11 @@
             const data = await response.json();
 
             if (data.results && data.results.length > 0) {
-              const city = data.results[0].address_components.find(component => component.types.includes('locality')).long_name;
-              const division = data.results[0].address_components.find(component => component.types.includes('administrative_area_level_1')).long_name;
+              // Not every coordinate has a locality or admin area — reaching straight
+              // for .long_name threw a TypeError outside city centres.
+              const parts = data.results[0].address_components ?? [];
+              const city = parts.find(c => c.types.includes('locality'))?.long_name ?? null;
+              const division = parts.find(c => c.types.includes('administrative_area_level_1'))?.long_name ?? null;
               this.location = { lat: latitude, lng: longitude, city, division };
               localStorage.setItem('location', JSON.stringify(this.location));
               await Preferences.set({ key: 'location', value: JSON.stringify(this.location) });
@@ -49,12 +73,14 @@
 </script>
 
 <template>
-  <!-- <header>
+  <header>
     <div class="header-area mt-5 flex items-center justify-between">
-      <p class="font-medium text-base	">Prayer Pulse</p>
-      <img src="@/assets/images/setting.svg" alt="setting">
+      <p class="font-medium text-base">Prayer Pulse</p>
+      <RouterLink to="/settings" aria-label="Settings">
+        <img class="w-6 h-6" src="@/assets/images/setting.svg" alt="setting">
+      </RouterLink>
     </div>
-  </header> -->
+  </header>
   <!-- Calender Start -->
   <div class="calender mt-3 mb-6 flex items-center justify-between">
     <div class="date">

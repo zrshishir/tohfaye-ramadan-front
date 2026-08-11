@@ -1,5 +1,6 @@
 <script>
   import api from '@/services/api';
+  import { calendarParams } from '@/services/settings';
   import { RouterLink } from 'vue-router';
   import TheLoading from '@/components/TheLoading.vue';
   import TheHeader from '@/components/TheHeader.vue';
@@ -32,7 +33,7 @@
         this.loading = true;
         try {
           const tommorrow = String(new Date().getDate() + 1).padStart(2, '0');
-          const response = await api.post('/permanent-calendar');
+          const response = await api.post('/permanent-calendar', calendarParams());
           const times = response.data?.data?.permanent_calendars?.data;
           
           const tommorrowData = times ? times.find(item => item.day === tommorrow) : null;

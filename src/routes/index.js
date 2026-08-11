@@ -23,6 +23,7 @@ import SingleDateVue from '@/screens/ramadan/SingleDate.vue';
 
 // New routes
 import MasalaVue from '@/screens/Masala.vue';
+import SettingsVue from '@/screens/Settings.vue';
 
 // Hadith library
 import HadithVue from '@/screens/hadith/index.vue';
@@ -87,6 +88,7 @@ const vueRouter = createRouter({
       ],
     },
     { path: '/masala', component: MasalaVue },
+    { path: '/settings', component: SettingsVue },
   ],
 });
 

@@ -1,5 +1,6 @@
 <script>
   import api from '@/services/api';
+  import { calendarParams } from '@/services/settings';
   import moment from 'moment';
   import { RouterLink } from 'vue-router';
   import TheHeader from '@/components/TheHeader.vue';
@@ -33,7 +34,7 @@
           this.error = false;
         } else {
           try {
-            const response = await api.get('/ramazan-calendar');
+            const response = await api.get('/ramazan-calendar', { params: calendarParams() });
             this.ramadanCalender = response.data?.data?.permanent_calendars;
             localStorage.setItem('Ramadan-Calender', JSON.stringify(this.ramadanCalender));
             this.loading = false;
