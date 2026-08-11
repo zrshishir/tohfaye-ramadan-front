@@ -2,6 +2,7 @@
 <script>
   import api from '@/services/api';
   import { calendarParams } from '@/services/settings';
+  import { reschedule } from '@/services/notifications';
   import Loading from '@/components/Loading.vue';
   import NextSalat from '@/components/home/NextSalat.vue';
   import HeaderArea from '@/components/home/HeaderArea.vue';
@@ -60,6 +61,13 @@
             this.loading = false;
           }
         }
+      },
+      // Prayer times move daily, so reminders are rebuilt as a rolling window each
+      // time the home screen loads the calendar rather than set as repeating alarms.
+      refreshReminders() {
+        reschedule(this.calendar).catch((error) => {
+          console.error('Error scheduling reminders:', error);
+        });
       },
       tomorrowSahriIfter(){
         const tomorrowDate = new Date(this.currentDate);
@@ -130,6 +138,7 @@
       this.fetchCalenderData().then(() => {
       this.getCurrentPrayerTime();
       this.getTimeLeftUntilEnd();
+      this.refreshReminders();
 
       this.intervalId = setInterval(() => {
         this.currentDate = new Date();

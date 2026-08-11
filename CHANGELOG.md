@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.2.0] - 2026-08-11
+
+> Requires backend **2.3.0**. Reminders fire at whatever times the API returns, so the
+> mazhab-offset correction must be deployed first — otherwise every reminder is 15
+> minutes late.
+
+### Added
+
+- **Prayer reminders.** Local notifications for sehri end, Fajr, Zuhr, Asr, iftar,
+  Maghrib and Isha, toggled per waqt, with an optional 5–30 minute lead time.
+- `src/services/notifications.js` — permission handling, schedule building and the
+  rolling-window rescheduler.
+- `npm run check:notifications` — 21 checks over the scheduling logic.
+- Android manifest permissions: `POST_NOTIFICATIONS` (required from Android 13),
+  `SCHEDULE_EXACT_ALARM` / `USE_EXACT_ALARM` (Android 12+), `RECEIVE_BOOT_COMPLETED`,
+  `VIBRATE`.
+
+### How it works
+
+Prayer times move every day, so reminders are scheduled as a **rolling 7-day window**
+rebuilt whenever the home screen loads the calendar, rather than as repeating alarms.
+
+iOS allows only **64 pending local notifications** per app and silently drops the rest,
+so the window is capped at 60. Notification ids are derived from day and waqt, so a
+rebuild replaces the previous entries instead of duplicating them.
+
+Changing district cancels pending reminders, since they were built from the previous
+district's times.
+
+### Edge cases handled
+
+- `esha.end_time` is the string `"till subhe sadik"`, not a clock time — the parser
+  rejects it rather than producing an Invalid Date.
+- Waqts already past are never scheduled.
+- Permission denial is surfaced in Settings rather than failing silently.
+
+
 ## [3.1.0] - 2026-08-11
 
 > Pairs with backend **2.2.0** (district offsets) and **2.3.0** (the mazhab offset
