@@ -31,6 +31,7 @@ export const TTL = {
   duaCategories: 7 * DAY,
   duas: 7 * DAY,
   asmaulHusna: 7 * DAY,
+  masalaCategories: 7 * DAY,
   tasbih: 30 * DAY,
 };
 

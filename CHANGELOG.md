@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.4.0] - 2026-08-11
+
+> Requires backend **2.4.0**, which renames the masala columns and paginates
+> `GET /api/masala`. Will not work against an older backend.
+
+### Added
+
+- **A browsable Masa-el library.** `/masala` was a single flat list; it is now a nested
+  section:
+
+  | Route | Screen |
+  |---|---|
+  | `/masala` | the nine fiqh categories, with a search box |
+  | `/masala/:categoryId` | paginated masa-el in a category |
+  | `/masala/search?q=` | paginated search results |
+  | `/masala/detail/:id` | one masala, question and answer |
+
+- Search across question and answer, with the API's two-character minimum reflected in
+  the submit button's disabled state.
+- Pagination matching the hadith and Surah screens, with the page synced into the route
+  query so a reload restores position.
+- The detail screen presents the question in a filled header card and the answer beneath,
+  preserving line breaks, with the source reference below.
+
+### Changed
+
+- `src/screens/Masala.vue` is replaced by `src/screens/masala/` — `Categories`,
+  `Masalas` and `SingleMasala`.
+- Categories are cached for a week through the shared cache layer.
+- Category headings prefer Bangla and fall back to English.
+
+
 ## [3.3.0] - 2026-08-11
 
 ### Fixed
