@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.5.0] - 2026-08-11
+
+> Requires backend **2.5.0**, which adds `GET /api/geocode`.
+
+### Security
+
+- **The Google Maps key is gone from the app bundle.** `HeaderArea` called the Geocoding
+  API directly with the key inlined, where anyone could extract it from a shipped build.
+  It now goes through the backend proxy, and `VITE_BASE_KEY` is no longer read anywhere.
+  Verified: no `AIzaSy` string and no `maps.googleapis.com` call remain in `dist/`.
+
+  ⚠️ **The old key still needs rotating** — it is in git history and in every build
+  already released.
+
+### Added
+
+- **District suggestion.** The proxy matches the detected location against the districts
+  table, so the home screen can offer "Show prayer times for Sylhet?" instead of leaving
+  the user to find their district in the Settings picker. Accepting it saves the district
+  and clears the district-scoped caches; declining leaves everything as it was.
+
+### Changed
+
+- The location label prefers the matched district name over the raw geocoded locality,
+  so it matches the district actually driving the times.
+
+
 ## [3.4.0] - 2026-08-11
 
 > Requires backend **2.4.0**, which renames the masala columns and paginates
