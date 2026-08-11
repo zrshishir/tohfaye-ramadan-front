@@ -6,15 +6,13 @@
  * now every device silently received Dhaka's times.
  */
 
+import { removeCache } from '@/services/cache';
+
 const KEY = 'settings';
 
 // Caches that are only valid for one district. Changing district must clear them,
 // or the app keeps showing the previous district's times.
-const DISTRICT_SCOPED_CACHES = [
-  'calendarData',
-  'calendarTimestamp',
-  'Ramadan-Calender',
-];
+const DISTRICT_SCOPED_CACHES = ['calendar', 'ramadanCalendar'];
 
 const defaults = () => ({
   districtId: null,
@@ -39,7 +37,7 @@ export function saveSettings(patch) {
 
 /** Clear the caches whose contents belong to a particular district. */
 export function clearDistrictScopedCaches() {
-  DISTRICT_SCOPED_CACHES.forEach((key) => localStorage.removeItem(key));
+  DISTRICT_SCOPED_CACHES.forEach(removeCache);
 }
 
 /**

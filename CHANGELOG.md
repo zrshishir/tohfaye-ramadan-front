@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.3.0] - 2026-08-11
+
+### Fixed
+
+- **Cached content never expired.** Every screen wrote its own `localStorage` key with
+  no TTL and no invalidation, so once a screen had cached, it never called the API
+  again. `Home.vue` even wrote a `calendarTimestamp` it never read back. A device could
+  show **last month's prayer times indefinitely**, and content corrected in admin would
+  never reach it.
+
+### Added
+
+- `src/services/cache.js` — one namespaced, versioned cache with per-content TTLs:
+  prayer calendars expire after a day (dated content), scripture and duas after a week
+  (long enough to be useful offline, short enough that a correction lands within days).
+- **Stale-while-offline.** When a request fails and expired content exists, the expired
+  content is served rather than failing the screen. That is what makes the app usable
+  without a connection; previously a failed request left an empty screen.
+- Corrupt or older-version entries are detected and dropped rather than crashing a screen.
+- A one-off purge of the pre-cache ad-hoc keys on startup, so they don't sit on device
+  forever. Settings and tasbih counters are deliberately preserved.
+- `npm run check:cache` — 24 checks, wired into CI.
+
+### Changed
+
+- Home, Ramadan calendar, Surah list, Dua categories and Asma-Ul-Husna all read through
+  the cache layer.
+- Changing district clears the namespaced calendar caches, as before.
+- `clearAll()` iterates `localStorage` via `length` / `key(i)` rather than
+  `Object.keys(localStorage)`, which relies on browser-specific behaviour.
+
+
 ## [3.2.0] - 2026-08-11
 
 > Requires backend **2.3.0**. Reminders fire at whatever times the API returns, so the

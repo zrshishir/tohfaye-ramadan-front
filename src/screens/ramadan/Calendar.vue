@@ -1,6 +1,7 @@
 <script>
   import api from '@/services/api';
   import { calendarParams } from '@/services/settings';
+  import { cached, TTL } from '@/services/cache';
   import moment from 'moment';
   import { RouterLink } from 'vue-router';
   import TheHeader from '@/components/TheHeader.vue';
@@ -21,29 +22,25 @@
         error: false,
         ramadanCalender: [],
         location: JSON.parse(localStorage.getItem('location')),
-        storedRamadanCalender: localStorage.getItem('Ramadan-Calender'),
+
       }
     },
     methods: {
       async fetchData() {
         this.loading = true;
 
-        if (this.storedRamadanCalender) {
-          this.ramadanCalender = JSON.parse(this.storedRamadanCalender);
-          this.loading = false;
-          this.error = false;
-        } else {
-          try {
+        try {
+          const { value } = await cached('ramadanCalendar', TTL.ramadanCalendar, async () => {
             const response = await api.get('/ramazan-calendar', { params: calendarParams() });
-            this.ramadanCalender = response.data?.data?.permanent_calendars;
-            localStorage.setItem('Ramadan-Calender', JSON.stringify(this.ramadanCalender));
-            this.loading = false;
-            this.error = false;           
-          } catch (error) {
-            this.loading = false;
-            this.error = true;
-            console.error('Error fetching data:', error);
-          }
+            return response.data?.data?.permanent_calendars ?? [];
+          });
+          this.ramadanCalender = value;
+          this.error = false;
+        } catch (error) {
+          this.error = true;
+          console.error('Error fetching data:', error);
+        } finally {
+          this.loading = false;
         }
       },
       isToday(day) {

@@ -1,5 +1,6 @@
 <script>
   import api from '@/services/api';
+  import { cached, TTL } from '@/services/cache';
   import TheHeader from '@/components/TheHeader.vue';
   import TheLoading from '@/components/TheLoading.vue';
   import TheError from '@/components/TheError.vue';
@@ -17,29 +18,25 @@ import TheNoData from '@/components/TheNoData.vue';
         loading: false,
         error: false,
         asmaulhusna: [],
-        storedAsmaUlHusna: localStorage.getItem('Asma-Ul-Husna'),
+
       }
     },
     methods: {
       async fetchData() {
         this.loading = true;
 
-        if (this.storedAsmaUlHusna) {
-          this.asmaulhusna = JSON.parse(this.storedAsmaUlHusna);
-          this.loading = false;
-          this.error = false;
-        } else {
-          try {
+        try {
+          const { value } = await cached('asmaulHusna', TTL.asmaulHusna, async () => {
             const response = await api.get('/asmaul-husna');
-            this.asmaulhusna = response.data?.data;
-            localStorage.setItem('Asma-Ul-Husna', JSON.stringify(response.data?.data));
-            this.loading = false;
-            this.error = false;           
-          } catch (error) {
-            this.loading = false;
-            this.error = true;
-            console.error('Error fetching data:', error);
-          }
+            return response.data?.data ?? [];
+          });
+          this.asmaulhusna = value;
+          this.error = false;
+        } catch (error) {
+          this.error = true;
+          console.error('Error fetching data:', error);
+        } finally {
+          this.loading = false;
         }
       }
     },
