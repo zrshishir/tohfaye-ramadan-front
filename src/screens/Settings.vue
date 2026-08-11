@@ -1,6 +1,10 @@
 <script>
   import api, { unwrap } from '@/services/api';
   import { getSettings, saveSettings, clearDistrictScopedCaches } from '@/services/settings';
+  import {
+    NOTIFIABLE, getNotificationSettings, saveNotificationSettings,
+    requestPermission, reschedule, cancelAll,
+  } from '@/services/notifications';
   import TheHeader from '@/components/TheHeader.vue';
   import TheLoading from '@/components/TheLoading.vue';
   import TheError from '@/components/TheError.vue';
@@ -17,6 +21,10 @@
         saved: false,
         selectedDivision: null,
         selectedDistrict: settings.districtId,
+        waqts: NOTIFIABLE,
+        notifications: getNotificationSettings(),
+        permissionDenied: false,
+        pendingCount: 0,
       }
     },
     computed: {
@@ -71,7 +79,54 @@
         // Cached calendars hold the previous district's times.
         clearDistrictScopedCaches();
 
+        // The cached calendar was the old district's; drop the reminders built from it.
+        cancelAll();
+        this.pendingCount = 0;
+
         this.saved = true;
+      },
+
+      // --------------------------------------------------------- notifications
+
+      cachedCalendar() {
+        try {
+          return JSON.parse(localStorage.getItem('calendarData') ?? '[]');
+        } catch {
+          return [];
+        }
+      },
+
+      async applyNotificationSettings() {
+        saveNotificationSettings(this.notifications);
+        this.pendingCount = await reschedule(this.cachedCalendar());
+      },
+
+      async toggleNotifications() {
+        if (!this.notifications.enabled) {
+          // Android 13+ and iOS both need an explicit grant before anything schedules.
+          const granted = await requestPermission();
+          this.permissionDenied = !granted;
+          if (!granted) return;
+        }
+
+        this.notifications.enabled = !this.notifications.enabled;
+
+        if (!this.notifications.enabled) {
+          saveNotificationSettings(this.notifications);
+          await cancelAll();
+          this.pendingCount = 0;
+          return;
+        }
+
+        await this.applyNotificationSettings();
+      },
+
+      async toggleWaqt(key) {
+        this.notifications.waqts = {
+          ...this.notifications.waqts,
+          [key]: !this.notifications.waqts[key],
+        };
+        await this.applyNotificationSettings();
       },
 
       useDhaka() {
@@ -151,6 +206,61 @@
         <p v-if="saved" class="text-center text-sm text-primary font-semibold pt-4">
           Saved. Prayer times will refresh.
         </p>
+      </div>
+
+      <div class="notifications bg-white shadow-3xl rounded-2xl p-4 mt-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-base font-bold">Prayer reminders</h3>
+          <button
+            @click="toggleNotifications"
+            :class="[
+              'px-4 py-1 rounded-full text-sm font-semibold border-2 border-primary',
+              notifications.enabled ? 'bg-primary text-white' : 'text-primary'
+            ]"
+          >
+            {{ notifications.enabled ? 'On' : 'Off' }}
+          </button>
+        </div>
+
+        <p v-if="permissionDenied" class="text-xs text-red-600 pt-3">
+          Notifications are blocked. Enable them for this app in your device settings.
+        </p>
+
+        <template v-if="notifications.enabled">
+          <p class="text-xs text-darkGreen pt-3 pb-3">Remind me for</p>
+          <div class="grid grid-cols-2 gap-2">
+            <button
+              v-for="waqt in waqts"
+              :key="waqt.key"
+              @click="toggleWaqt(waqt.key)"
+              :class="[
+                'px-3 py-2 rounded-2xl text-sm font-medium border-2',
+                notifications.waqts[waqt.key]
+                  ? 'bg-primary text-white border-primary'
+                  : 'text-primary border-gainsboro'
+              ]"
+            >
+              {{ waqt.label }}
+            </button>
+          </div>
+
+          <label class="block text-sm font-medium pt-4 pb-1">Notify me</label>
+          <select
+            v-model.number="notifications.minutesBefore"
+            @change="applyNotificationSettings"
+            class="w-full px-4 py-2 border-2 border-primary rounded-2xl outline-none bg-white"
+          >
+            <option :value="0">At the time</option>
+            <option :value="5">5 minutes before</option>
+            <option :value="10">10 minutes before</option>
+            <option :value="15">15 minutes before</option>
+            <option :value="30">30 minutes before</option>
+          </select>
+
+          <p class="text-xs text-darkGreen pt-3">
+            {{ pendingCount }} reminders scheduled for the next 7 days.
+          </p>
+        </template>
       </div>
 
       <p class="text-xs text-darkGreen text-center pt-6 pb-8">
