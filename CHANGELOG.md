@@ -11,6 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Tasbih broke against a backend older than 1.2.0.** That release changed
+  `data.tasbih` from a JSON-encoded string to an array, and the screen only handled the
+  array — so against a server that had not been redeployed it received a string, and the
+  counter logic and `v-for` both failed.
+
+  The screen now accepts either shape. A released app can update from the store before
+  the server it talks to is redeployed, so the client should tolerate the older response
+  rather than break.
+
 - **`npm run build` now fails when `VITE_BASE_URL` is unset**, instead of producing a
   bundle with no API URL compiled in.
 
