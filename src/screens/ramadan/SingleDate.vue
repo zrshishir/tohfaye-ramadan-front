@@ -21,6 +21,11 @@ import TheNoData from '@/components/TheNoData.vue';
         location: JSON.parse(localStorage.getItem('location')),
       }
     },
+    computed: {
+      calendarYear() {
+        return moment().year();
+      },
+    },
     methods: {
       async fetchData() {
         this.loading = true;
@@ -76,7 +81,7 @@ import TheNoData from '@/components/TheNoData.vue';
     <div v-if="ramadanSingleCalender !== 0" class="ramadan-area">
       <div class="ramadan-header text-center text-white bg-primary py-1">
         <div class="p-6 m-5">
-          <h1 class="text-2xl font-bold">Ramadan - 2024</h1>
+          <h1 class="text-2xl font-bold">Ramadan - {{ calendarYear }}</h1>
           <p class="pt-1">Sheri and Iftar time alart</p>
         </div>
       </div>

@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.7.2] - 2026-08-12
+
+### Fixed
+
+- **Iftar appeared as the next salat.** The next-prayer rotation iterated *every* key on
+  a calendar row and excluded a handful by name, so the derived `iftar` field added in
+  3.4.0 joined the rotation automatically — as had `sehri`, `sunrise` and `ishraq`. It
+  now uses an explicit list of the actual waqts: tahazzud, fajr, zuhr (jummah on Friday),
+  asr, maghrib, isha.
+
+- **Tomorrow's sehri and iftar countdowns were wrong.** The parser split
+  `"06:32 PM"` on `/:| /` and used the hour directly, **discarding the AM/PM** — so
+  iftar was treated as 06:32 in the morning and the countdown was around 12 hours out.
+  Times are now parsed with the meridiem, and a countdown that has already passed shows
+  zero rather than a negative.
+
+- **The Ramadan calendar was pinned to 2024.** The heading read "Ramadan - 2024", and
+  `isToday()` compared against `2024-03-DD`, so **no date could ever be highlighted**
+  after Ramadan 2024. The year now comes from the current date and the month from each
+  row.
+
+- **The Hadith and Masa-el menu icons were 6-byte corrupt files** and rendered as broken
+  images. Rewritten.
+
+
 ## [3.7.1] - 2026-08-11
 
 ### Fixed
