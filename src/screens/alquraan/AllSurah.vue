@@ -1,6 +1,7 @@
 <script>
   import api from '@/services/api';
   import { cached, TTL } from '@/services/cache';
+  import { getReaderSettings } from '@/services/reader';
   import { RouterLink } from 'vue-router';
   import TheHeader from '@/components/TheHeader.vue';
   import TheLoading from '@/components/TheLoading.vue';
@@ -22,6 +23,11 @@
         selectedOption: 'Select Your Surah',
 
       }
+    },
+    computed: {
+      lastRead() {
+        return getReaderSettings().lastRead;
+      },
     },
     methods: {
       async fetchData() {
@@ -75,6 +81,18 @@
     <the-header title="Al-Quraan">      
       <img @click="toggleSearch" class="w-[22px]" src="@/assets/images/search.svg" alt="search">
     </the-header>
+
+    <RouterLink
+      v-if="lastRead"
+      :to="`/al-quraan/${lastRead.suraName}/-/-/-/${lastRead.suraId}?page=${lastRead.page}`"
+      class="continue mx-5 mb-1 p-4 bg-primary rounded-2xl flex items-center justify-between"
+    >
+      <div>
+        <p class="text-xs text-white opacity-90">Continue reading</p>
+        <p class="text-base font-bold text-white">{{ lastRead.suraName }}</p>
+      </div>
+      <span class="text-white text-sm">Ayat {{ lastRead.ayatNo }} &rsaquo;</span>
+    </RouterLink>
     <TheNoData v-if="surahs === 0"/>
     <div v-if="surahs !== 0" class="tasbih-area px-5 pb-3">
       <div v-if="show" class="relative">

@@ -43,3 +43,6 @@ jobs:
 
       - name: Cache layer checks
         run: npm run check:cache
+
+      - name: Quran reader checks
+        run: npm run check:reader
