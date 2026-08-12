@@ -4,6 +4,14 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .glass-panel {
+    @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-lg rounded-2xl;
+  }
+  .gold-text {
+    @apply text-secondary font-semibold drop-shadow-sm;
+  }
+}
 
 #app {
   max-width: 1280px;

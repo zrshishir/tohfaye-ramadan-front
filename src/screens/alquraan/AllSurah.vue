@@ -1,5 +1,7 @@
 <script>
-  import axios from 'axios';
+  import api from '@/services/api';
+  import { cached, TTL } from '@/services/cache';
+  import { getReaderSettings } from '@/services/reader';
   import { RouterLink } from 'vue-router';
   import TheHeader from '@/components/TheHeader.vue';
   import TheLoading from '@/components/TheLoading.vue';
@@ -19,27 +21,28 @@
         loading: false,
         isModalOpen: false,
         selectedOption: 'Select Your Surah',
-        storedSurah: localStorage.getItem('surah'),
+
       }
+    },
+    computed: {
+      lastRead() {
+        return getReaderSettings().lastRead;
+      },
     },
     methods: {
       async fetchData() {
         this.loading = true;
 
-        if (this.storedSurah) {
-          this.surahs = JSON.parse(this.storedSurah);
+        try {
+          const { value } = await cached('suras', TTL.suras, async () => {
+            const response = await api.get('/sura');
+            return response.data?.data ?? [];
+          });
+          this.surahs = value;
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        } finally {
           this.loading = false;
-        } else {
-          try {
-            const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/sura`);            
-            this.surahs = response.data?.data;
-            localStorage.setItem('surah', JSON.stringify(response.data?.data));            
-          } catch (error) {
-            this.loading = false;
-            console.error('Error fetching data:', error);
-          } finally {
-            this.loading = false;
-          }
         }
       },
       toggleSearch() {
@@ -78,6 +81,18 @@
     <the-header title="Al-Quraan">      
       <img @click="toggleSearch" class="w-[22px]" src="@/assets/images/search.svg" alt="search">
     </the-header>
+
+    <RouterLink
+      v-if="lastRead"
+      :to="`/al-quraan/${lastRead.suraName}/-/-/-/${lastRead.suraId}?page=${lastRead.page}`"
+      class="continue mx-5 mb-1 p-4 bg-primary rounded-2xl flex items-center justify-between"
+    >
+      <div>
+        <p class="text-xs text-white opacity-90">Continue reading</p>
+        <p class="text-base font-bold text-white">{{ lastRead.suraName }}</p>
+      </div>
+      <span class="text-white text-sm">Ayat {{ lastRead.ayatNo }} &rsaquo;</span>
+    </RouterLink>
     <TheNoData v-if="surahs === 0"/>
     <div v-if="surahs !== 0" class="tasbih-area px-5 pb-3">
       <div v-if="show" class="relative">

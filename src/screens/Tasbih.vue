@@ -1,94 +1,222 @@
 <script>
-  import axios from 'axios';
+  import api from '@/services/api';
   import TheHeader from '@/components/TheHeader.vue';
   import TheLoading from '@/components/TheLoading.vue';
   import TheError from '@/components/TheError.vue';
   import TheNoData from '@/components/TheNoData.vue';
 
+  // No accounts yet, so every device shares the seeded default row.
+  const USER_ID = 1;
+  const CACHE_KEY = 'tasbih';
+  const SYNC_DELAY = 1500;
+
+  const todayKey = () => {
+    const now = new Date();
+    return {
+      day:   now.toISOString().slice(0, 10),
+      month: now.getMonth(),
+      year:  now.getFullYear(),
+    };
+  };
+
   export default {
     components: {
-    TheHeader,
-    TheLoading,
-    TheError,
-    TheNoData
-  },
-    data(){
+      TheHeader,
+      TheLoading,
+      TheError,
+      TheNoData
+    },
+    data() {
       return {
-        counter: 0,
         tasbihs: [],
         error: false,
         loading: false,
-        storedTasbihs: localStorage.getItem('tasbih'),
+        // Period bookkeeping. These were previously read off `this` without ever
+        // being declared, so the daily reset never fired and the monthly/yearly
+        // counters were zeroed on the first tap of every visit.
+        lastCountedDay: null,
+        lastCountedMonth: null,
+        lastCountedYear: null,
+        syncTimer: null,
       }
     },
     methods: {
+      // ------------------------------------------------------------- storage
+
+      readCache() {
+        try {
+          const raw = localStorage.getItem(CACHE_KEY);
+          if (!raw) return null;
+          const parsed = JSON.parse(raw);
+          return Array.isArray(parsed?.tasbihs) ? parsed : null;
+        } catch {
+          // A previous build stored a bare JSON string under this key.
+          localStorage.removeItem(CACHE_KEY);
+          return null;
+        }
+      },
+
+      writeCache() {
+        localStorage.setItem(CACHE_KEY, JSON.stringify({
+          tasbihs: this.tasbihs,
+          lastCountedDay: this.lastCountedDay,
+          lastCountedMonth: this.lastCountedMonth,
+          lastCountedYear: this.lastCountedYear,
+        }));
+      },
+
+      // --------------------------------------------------------------- fetch
+
+      /** Accept either the array (1.2.0+) or the JSON string an older backend sends. */
+      normaliseTasbihs(value) {
+        if (Array.isArray(value)) return value;
+
+        if (typeof value === 'string') {
+          try {
+            const parsed = JSON.parse(value);
+            return Array.isArray(parsed) ? parsed : [];
+          } catch {
+            console.error('Could not parse the tasbih payload from the server.');
+            return [];
+          }
+        }
+
+        return [];
+      },
+
       async fetchTasbihs() {
         this.loading = true;
 
-        if (this.storedTasbihs) {
-          this.tasbihs = JSON.parse(this.storedTasbihs);
-          this.loading = false;
+        const cached = this.readCache();
+        if (cached) {
+          this.lastCountedDay   = cached.lastCountedDay ?? null;
+          this.lastCountedMonth = cached.lastCountedMonth ?? null;
+          this.lastCountedYear  = cached.lastCountedYear ?? null;
+        }
+
+        try {
+          const response = await api.get('/tasbih', {
+            params: { user_id: USER_ID },
+          });
+
+          // Backend 1.2.0+ returns `data.tasbih` as a JSON array; before that it was a
+          // JSON-encoded string. Both are accepted, because an app can update from the
+          // store before the server it talks to is redeployed — and a released app
+          // should not break on the older shape.
+          const serverTasbihs = this.normaliseTasbihs(response.data?.data?.tasbih);
+
+          // Server owns the dhikr list (text, reset_on); the device owns the counters.
+          this.tasbihs = serverTasbihs.map((dhikr) => {
+            const local = cached?.tasbihs?.find((t) => t.text_en === dhikr.text_en);
+            return local ? { ...dhikr, ...this.countsOf(local) } : { ...dhikr };
+          });
+
           this.error = false;
-        } else {
-          try {
-            const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/tasbih`);            
-            this.tasbihs = JSON.parse(response.data?.data?.tasbih);
-            localStorage.setItem('tasbih', response.data?.data?.tasbih);
-            this.loading = false;
-            this.error = false;            
-          } catch (error) {
-            this.loading = false;
-            this.error = true;
-            console.error('Error fetching data:', error);
+        } catch (error) {
+          // Offline or the row is missing — fall back to whatever we have locally.
+          if (cached?.tasbihs?.length) {
+            this.tasbihs = cached.tasbihs;
+            this.error = false;
+          } else {
+            this.tasbihs = [];
+            this.error = error.response?.status !== 404;
           }
+          console.error('Error fetching data:', error);
+        } finally {
+          this.applyPeriodResets();
+          this.loading = false;
         }
       },
+
+      countsOf(dhikr) {
+        return {
+          count:         dhikr.count ?? 0,
+          today_count:   dhikr.today_count ?? 0,
+          monthly_count: dhikr.monthly_count ?? 0,
+          yearly_count:  dhikr.yearly_count ?? 0,
+          total_count:   dhikr.total_count ?? 0,
+        };
+      },
+
+      // -------------------------------------------------------------- counting
+
+      /**
+       * Zero the periodic counters when the calendar period has rolled over.
+       * Runs on load and before every increment, so a session left open
+       * overnight still rolls correctly.
+       */
+      applyPeriodResets() {
+        if (!this.tasbihs.length) return;
+
+        const { day, month, year } = todayKey();
+
+        if (this.lastCountedDay && this.lastCountedDay !== day) {
+          this.tasbihs.forEach((t) => { t.today_count = 0; t.count = 0; });
+        }
+        if (this.lastCountedMonth !== null && this.lastCountedMonth !== month) {
+          this.tasbihs.forEach((t) => { t.monthly_count = 0; });
+        }
+        if (this.lastCountedYear !== null && this.lastCountedYear !== year) {
+          this.tasbihs.forEach((t) => { t.yearly_count = 0; });
+        }
+      },
+
       counterHandler(tasbih) {
-        const currentTime = Date.now();
-        const currentMonth = new Date().getMonth();
-        const currentYear = new Date().getFullYear();
+        this.applyPeriodResets();
 
-        if (this.isPast24Hours(this.lastResetTimestamp, currentTime)) {
-          this.lastResetTimestamp = currentTime;
-          tasbih.today_count = 1;
-          tasbih.count = 1;
-        } else {
-          tasbih.today_count++;
-          tasbih.count++;
-        }
+        const { day, month, year } = todayKey();
 
-        if (!this.isSameMonth(this.currentMonth, currentMonth)) {
-          tasbih.monthly_count = 0;
-        }
+        tasbih.count         = (tasbih.count ?? 0) + 1;
+        tasbih.today_count   = (tasbih.today_count ?? 0) + 1;
+        tasbih.monthly_count = (tasbih.monthly_count ?? 0) + 1;
+        tasbih.yearly_count  = (tasbih.yearly_count ?? 0) + 1;
+        tasbih.total_count   = (tasbih.total_count ?? 0) + 1;
 
-        if (!this.isSameYear(this.currentYear, currentYear)) {
-          tasbih.yearly_count = 0;
-        }
-        
-        tasbih.monthly_count++;
-        tasbih.yearly_count++;
-        tasbih.total_count++;
-
-        if (tasbih.count === tasbih.reset_on) {
+        if (tasbih.reset_on > 0 && tasbih.count >= tasbih.reset_on) {
           tasbih.count = 0;
         }
 
-        this.currentMonth = currentMonth;
-        this.currentYear = currentYear;
+        this.lastCountedDay   = day;
+        this.lastCountedMonth = month;
+        this.lastCountedYear  = year;
+
+        this.writeCache();
+        this.scheduleSync();
       },
-      isPast24Hours(startTimestamp, endTimestamp) {
-        const millisecondsInDay = 24 * 60 * 60 * 1000;
-        return endTimestamp - startTimestamp >= millisecondsInDay;
+
+      // ----------------------------------------------------------------- sync
+
+      scheduleSync() {
+        clearTimeout(this.syncTimer);
+        this.syncTimer = setTimeout(() => this.syncToServer(), SYNC_DELAY);
       },
-      isSameMonth(month1, month2) {
-        return month1 === month2;
-      },
-      isSameYear(year1, year2) {
-        return year1 === year2;
+
+      /**
+       * Counters previously lived only in memory — nothing was ever written back,
+       * so every tap was lost when the screen was closed.
+       */
+      async syncToServer() {
+        if (!this.tasbihs.length) return;
+
+        try {
+          await api.put(`/tasbih/${USER_ID}`, {
+            tasbih: this.tasbihs,
+          });
+        } catch (error) {
+          // Counters are safe in localStorage; the next tap retries.
+          console.error('Error syncing tasbih counts:', error);
+        }
       },
     },
     created() {
       this.fetchTasbihs();
+    },
+    beforeUnmount() {
+      // Flush a pending debounce so leaving the screen does not drop the last taps.
+      if (this.syncTimer) {
+        clearTimeout(this.syncTimer);
+        this.syncToServer();
+      }
     }
   }
 </script>
@@ -103,8 +231,8 @@
   <TheError v-if="error"/>
   <template v-if="!loading">    
     <TheHeader title="Tasbih"/>
-    <TheNoData v-if="tasbihs === 0"/>
-    <div v-if="tasbihs !== 0" class="tasbih-area px-5 py-4">
+    <TheNoData v-if="!error && !tasbihs.length"/>
+    <div v-if="tasbihs.length" class="tasbih-area px-5 py-4">
       <div v-for="(tasbih, index) in tasbihs" :key="index" class="tasbih mb-3 p-3 border-2 border-primary rounded-3xl flex items-center justify-between gap-3 bg-tasbih bg-cover bg-center bg-no-repeat">
         <div class="tasbih-content flex-1 text-center">
           <h3 class="text-3xl">{{ tasbih?.text_ar }}</h3>

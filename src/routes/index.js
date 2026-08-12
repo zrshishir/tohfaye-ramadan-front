@@ -21,6 +21,22 @@ import TomorrowTimesVue from '@/screens/time/TomorrowTimes.vue';
 import CalendarVue from '@/screens/ramadan/Calendar.vue';
 import SingleDateVue from '@/screens/ramadan/SingleDate.vue';
 
+// New routes
+import MasalaVue from '@/screens/masala/index.vue';
+import MasalaCategoriesVue from '@/screens/masala/Categories.vue';
+import MasalaListVue from '@/screens/masala/Masalas.vue';
+import SingleMasalaVue from '@/screens/masala/SingleMasala.vue';
+import SettingsVue from '@/screens/Settings.vue';
+import AccountVue from '@/screens/Account.vue';
+import BookmarksVue from '@/screens/Bookmarks.vue';
+
+// Hadith library
+import HadithVue from '@/screens/hadith/index.vue';
+import HadithBooksVue from '@/screens/hadith/Books.vue';
+import HadithChaptersVue from '@/screens/hadith/Chapters.vue';
+import HadithListVue from '@/screens/hadith/Hadiths.vue';
+import SingleHadithVue from '@/screens/hadith/SingleHadith.vue';
+
 // Create a router instance
 const vueRouter = createRouter({
   history: createWebHistory(),
@@ -64,6 +80,32 @@ const vueRouter = createRouter({
     },
     { path: '/asma-ul-husna', component: AsmaUlHusnaVue },
     { path: '/kibla-compass', component: KiblaCompassVue },
+    {
+      path: '/hadith',
+      component: HadithVue,
+      children: [
+        { path: '', name: 'hadith', component: HadithBooksVue },
+        // Static segments are declared before the :bookId param so they win the match.
+        { path: 'search', component: HadithListVue },
+        { path: 'detail/:id', component: SingleHadithVue },
+        { path: ':bookId', component: HadithChaptersVue },
+        { path: ':bookId/:chapterId', component: HadithListVue },
+      ],
+    },
+    {
+      path: '/masala',
+      component: MasalaVue,
+      children: [
+        { path: '', name: 'masala', component: MasalaCategoriesVue },
+        // Static segments before :categoryId so they win the match.
+        { path: 'search', component: MasalaListVue },
+        { path: 'detail/:id', component: SingleMasalaVue },
+        { path: ':categoryId', component: MasalaListVue },
+      ],
+    },
+    { path: '/settings', component: SettingsVue },
+    { path: '/account', component: AccountVue },
+    { path: '/bookmarks', component: BookmarksVue },
   ],
 });
 

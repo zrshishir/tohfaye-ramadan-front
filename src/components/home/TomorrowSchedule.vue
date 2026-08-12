@@ -27,33 +27,51 @@
       clickHandler() {
         this.$router.push({ path: '/time/tomorrow-salat' });
       },
+      /**
+       * "06:32 PM" -> a Date on the given day.
+       *
+       * The previous version split on /:| / and used the hour directly, discarding the
+       * AM/PM entirely — so iftar at 06:32 PM was treated as 06:32 in the morning and
+       * the countdown was ~12 hours out.
+       */
+      timeOnDate(value, date) {
+        const match = String(value ?? '').trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+        if (!match) return null;
+
+        let [, hour, minute, meridiem] = match;
+        hour = parseInt(hour, 10);
+        minute = parseInt(minute, 10);
+
+        if (meridiem.toUpperCase() === 'PM' && hour !== 12) hour += 12;
+        if (meridiem.toUpperCase() === 'AM' && hour === 12) hour = 0;
+
+        return new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, minute, 0, 0);
+      },
+
+      /** Whole hours and minutes from now until `target`, never negative. */
+      countdownTo(target) {
+        const diff = target - new Date();
+        if (diff <= 0) return { hours: 0, minutes: 0 };
+
+        return {
+          hours: Math.floor(diff / 3600000),
+          minutes: Math.floor((diff % 3600000) / 60000),
+        };
+      },
+
       calculateTimeDifferenceSehri() {
-        const [hour, minute] = this.tomorrow?.sehri?.start_time?.split(/:| /);
-        const currentTime = new Date();
-        const tomorrowDate = new Date(currentTime);
-        tomorrowDate.setDate(currentTime.getDate() + 1);
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
 
-        const targetTime = new Date( tomorrowDate.getFullYear(), tomorrowDate.getMonth(), tomorrowDate.getDate(), hour, minute);
-        const timeDifference = targetTime - currentTime;
-
-        const hours = Math.floor(timeDifference / 3600000);
-        const minutes = Math.floor((timeDifference % 3600000) / 60000);
-
-        this.timeDifferenceSehri = { hours, minutes };
+        const target = this.timeOnDate(this.tomorrow?.sehri?.end_time, tomorrow);
+        this.timeDifferenceSehri = target ? this.countdownTo(target) : { hours: 0, minutes: 0 };
       },
       calculateTimeDifferenceIftar() {
-        const [hour, minute] = this.tomorrow?.ifter?.start_time?.split(/:| /);
-        const currentTime = new Date();
-        const tomorrowDate = new Date(currentTime);
-        tomorrowDate.setDate(currentTime.getDate() + 1);
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
 
-        const targetTime = new Date( tomorrowDate.getFullYear(), tomorrowDate.getMonth(), tomorrowDate.getDate(), hour, minute);
-        const timeDifference = targetTime - currentTime;
-
-        const hours = Math.floor(timeDifference / 3600000);
-        const minutes = Math.floor((timeDifference % 3600000) / 60000);
-
-        this.timeDifferenceIftar = { hours, minutes };
+        const target = this.timeOnDate(this.tomorrow?.iftar?.start_time, tomorrow);
+        this.timeDifferenceIftar = target ? this.countdownTo(target) : { hours: 0, minutes: 0 };
       },
     }
   }
@@ -71,7 +89,7 @@
           </p>
           <p class="flex items-center justify-between">
             <span class="font-light">Iftar</span>
-            <span>{{ tomorrow?.ifter?.start_time }} - {{ timeDifferenceIftar?.hours }} h {{ timeDifferenceIftar?.minutes <= 9 ? "0" : "" }}{{ timeDifferenceIftar?.minutes }} m (Left)</span>
+            <span>{{ tomorrow?.iftar?.start_time }} - {{ timeDifferenceIftar?.hours }} h {{ timeDifferenceIftar?.minutes <= 9 ? "0" : "" }}{{ timeDifferenceIftar?.minutes }} m (Left)</span>
           </p>
         </div>
         <!-- <div class="next text-center pt-3">

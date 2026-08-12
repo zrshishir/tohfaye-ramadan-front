@@ -1,5 +1,6 @@
 <script>
-  import axios from 'axios';
+  import api from '@/services/api';
+  import { cached, TTL } from '@/services/cache';
   import { RouterLink } from 'vue-router';
   import TheHeader from '@/components/TheHeader.vue';
   import TheLoading from '@/components/TheLoading.vue';
@@ -16,29 +17,25 @@
         error: false,
         loading: false,
         duaCategory: [],
-        storedDuaCategory: localStorage.getItem('Dua-Category'),
+
       }
     },
     methods: {
       async fetchData() {
         this.loading = true;
 
-        if (this.storedDuaCategory) {
-          this.duaCategory = JSON.parse(this.storedDuaCategory);
-          this.loading = false;
+        try {
+          const { value } = await cached('duaCategories', TTL.duaCategories, async () => {
+            const response = await api.get('/doa-category');
+            return response.data?.data ?? [];
+          });
+          this.duaCategory = value;
           this.error = false;
-        } else {
-          try {
-            const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/doa-category`);
-            this.duaCategory = response.data?.data;
-            localStorage.setItem('Dua-Category', JSON.stringify(response.data?.data));
-            this.loading = false;
-            this.error = false;           
-          } catch (error) {
-            this.loading = false;
-            this.error = true;
-            console.error('Error fetching data:', error);
-          }
+        } catch (error) {
+          this.error = true;
+          console.error('Error fetching data:', error);
+        } finally {
+          this.loading = false;
         }
       }
     },

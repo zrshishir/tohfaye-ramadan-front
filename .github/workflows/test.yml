@@ -1,31 +1,48 @@
 name: Test Vue.js project
 
+# The previous version of this file was indented with tab characters, which YAML
+# forbids, so every run failed to parse and exited in 0 seconds. Nothing was ever
+# actually tested.
 on:
-	push:
-		branches:
-			- development
-	pull_request:
-		branches:
-			- development
+  push:
+    branches: [main, development]
+  pull_request:
+    branches: [main, development]
 
 jobs:
-	build:
-		runs-on: ubuntu-latest
+  build:
+    name: Build and checks
+    runs-on: ubuntu-latest
 
-		steps:
-			- name: Checkout code
-				uses: actions/checkout@v2
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-			- name: Set up Node.js
-				uses: actions/setup-node@v2
-				with:
-					node-version: 18
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
 
-			- name: Install dependencies
-				run: npm install
+      - name: Install dependencies
+        run: npm ci
 
-			- name: Build project
-				run: npm run build
+      # .env is git-ignored, and Vite inlines env values at build time, so CI needs
+      # its own. The value is irrelevant here — nothing in the build calls the API.
+      - name: Prepare environment
+        run: cp .env.example .env
 
-			- name: Run tests
-				run: npm run test
+      - name: Build
+        run: npm run build
+
+      - name: Qibla bearing checks
+        run: npm run check:qibla
+
+      - name: Prayer reminder scheduling checks
+        run: npm run check:notifications
+
+      - name: Cache layer checks
+        run: npm run check:cache
+
+      - name: Quran reader checks
+        run: npm run check:reader

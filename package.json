@@ -1,12 +1,16 @@
 {
   "name": "prayer-pulse",
-  "version": "2.0.0",
+  "version": "3.7.2",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "check:qibla": "node scripts/qibla-check.mjs",
+    "check:notifications": "node --import ./scripts/register-hook.mjs scripts/notifications-check.mjs",
+    "check:cache": "node --import ./scripts/register-hook.mjs scripts/cache-check.mjs",
+    "check:reader": "node --import ./scripts/register-hook.mjs scripts/reader-check.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^5.7.0",
@@ -14,20 +18,21 @@
     "@capacitor/core": "^5.7.3",
     "@capacitor/geolocation": "^5.0.7",
     "@capacitor/ios": "^5.7.0",
+    "@capacitor/local-notifications": "^5.0.8",
     "@capacitor/preferences": "^5.0.7",
     "axios": "^1.6.5",
     "moment": "^2.30.1",
     "navigo": "^8.11.1",
-    "vue": "^3.3.11",
+    "vue": "^3.4.21",
     "vue-router": "^4.2.5"
   },
   "devDependencies": {
     "@capacitor/cli": "^5.7.3",
-    "@vitejs/plugin-vue": "^4.5.2",
+    "@vitejs/plugin-vue": "^5.0.4",
     "@vitejs/plugin-vue-jsx": "^3.1.0",
-    "autoprefixer": "^10.4.16",
-    "postcss": "^8.4.33",
-    "tailwindcss": "^3.4.1",
-    "vite": "^5.0.10"
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.3",
+    "vite": "^5.2.8"
   }
 }

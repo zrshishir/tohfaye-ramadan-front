@@ -1,6 +1,9 @@
 
 <script>
-  import axios from 'axios';
+  import api from '@/services/api';
+  import { calendarParams } from '@/services/settings';
+  import { reschedule } from '@/services/notifications';
+  import { cached, TTL } from '@/services/cache';
   import Loading from '@/components/Loading.vue';
   import NextSalat from '@/components/home/NextSalat.vue';
   import HeaderArea from '@/components/home/HeaderArea.vue';
@@ -29,8 +32,9 @@
         calendar: [],
         loading: false,
         currentTime: new Date().getTime(),
-        storedData: localStorage.getItem('calendarData'),
-        storedTimestamp: localStorage.getItem('calendarTimestamp'),
+        showingStale: false,
+        // Chronological, and Jummah replaces Johr on a Friday (handled below).
+        SALAT_WAQTS: ['tahazzud', 'fazr', 'johr', 'jummah', 'asr', 'magrib', 'esha'],
         leftTime: null,
         nextSalat: null,
         intervalId: null,
@@ -42,30 +46,43 @@
     methods: {    
       async fetchCalenderData() {
         this.loading = true;
-        if (this.storedData) {
-          this.calendar = JSON.parse(this.storedData);
-          this.loading = false;
-        } else {
+        {
           try {
-            const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/permanent-calendar`);
-            this.calendar = response.data?.data?.permanent_calendars?.data;
-            
-            localStorage.setItem('calendarData', JSON.stringify(this.calendar));
-            localStorage.setItem('calendarTimestamp', this.currentTime.toString());
+            // Expires after a day: the calendar is dated content, and the previous
+            // cache never expired at all — a device could show last month's times.
+            const { value, stale } = await cached('calendar', TTL.calendar, async () => {
+              const response = await api.post('/permanent-calendar', calendarParams());
+              return response.data?.data?.permanent_calendars?.data || [];
+            });
+
+            this.calendar = value;
+            this.showingStale = stale;
           } catch (error) {
-            this.loading = false;
             console.error('Error fetching data:', error);
           } finally {
             this.loading = false;
           }
         }
       },
+      // Prayer times move daily, so reminders are rebuilt as a rolling window each
+      // time the home screen loads the calendar rather than set as repeating alarms.
+      refreshReminders() {
+        reschedule(this.calendar).catch((error) => {
+          console.error('Error scheduling reminders:', error);
+        });
+      },
       tomorrowSahriIfter(){
         const tomorrowDate = new Date(this.currentDate);
         tomorrowDate.setDate(this.currentDate.getDate() + 1);
         const tomorrowDaySalat = this.calendar.filter(date => parseInt(date.day) === tomorrowDate.getDate());
 
-        return { sehri: tomorrowDaySalat[0]?.sehri, ifter: tomorrowDaySalat[0]?.magrib };
+        // Prefer the API's derived `iftar`, which carries the mazhab's iftar_time
+        // offset. `magrib` is the fallback for a pre-1.3.0 backend, and carries
+        // magrib_time instead — the two differ whenever a mazhab configures them apart.
+        return {
+          sehri: tomorrowDaySalat[0]?.sehri,
+          iftar: tomorrowDaySalat[0]?.iftar ?? tomorrowDaySalat[0]?.magrib,
+        };
       },
       parseTime(timeString) {
         let time = new Date(`${this.formattedDate} ` + timeString);
@@ -81,10 +98,16 @@
           let currentTime = this.currentDate.toLocaleTimeString('en-US', { hour12: false });
           let foundCurrentPrayer = false;
 
-          for (let prayer in currentDaySalat[0]) {
+          // An explicit list of the actual salat waqts, in order.
+          //
+          // This used to iterate every key on the row and exclude a few by name, so any
+          // new key joined the rotation automatically. Adding the derived `iftar` field
+          // therefore made "Iftar" show up as the next salat, which it is not — and
+          // sehri, sunrise and ishraq were in there for the same reason.
+          for (let prayer of this.SALAT_WAQTS) {
             const isFriday = todayWeekdayName === 'Friday' ? prayer !== "johr" : prayer !== "jummah";
 
-            if ( isFriday && currentDaySalat[0]?.hasOwnProperty(prayer) && prayer !== "day" && prayer !== "id" && prayer !== "month_id" && prayer !== "forbidden" && currentDaySalat[0][prayer]) {
+            if ( isFriday && currentDaySalat[0]?.hasOwnProperty(prayer) && currentDaySalat[0][prayer]) {
               let prayerTime = currentDaySalat[0][prayer];
 
               if ( this.parseTime(currentTime) >= this.parseTime(prayerTime.start_time) && this.parseTime(currentTime) <= this.parseTime(prayerTime.end_time)) {
@@ -123,6 +146,7 @@
       this.fetchCalenderData().then(() => {
       this.getCurrentPrayerTime();
       this.getTimeLeftUntilEnd();
+      this.refreshReminders();
 
       this.intervalId = setInterval(() => {
         this.currentDate = new Date();
