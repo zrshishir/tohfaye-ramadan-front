@@ -16,14 +16,17 @@ export default defineConfig(({ command, mode }) => {
    * the app silently goes nowhere — the screens render but no data ever arrives, which
    * looks like a backend outage rather than a missing file.
    *
-   * Only enforced for builds. `npm run dev` still works without one, falling back to the
-   * proxy below.
+   * Enforced for `dev` as well as `build`. The dev proxy only forwards paths beginning
+   * /api, but with no baseURL axios issues relative requests like /permanent-calendar,
+   * which the proxy never sees — so the dev server fails exactly the same way, screen by
+   * screen, with an error dialog and no data.
    */
-  if (command === 'build' && !env.VITE_BASE_URL) {
+  if (!env.VITE_BASE_URL) {
     throw new Error(
-      'VITE_BASE_URL is not set, so this build could not talk to the API.\n' +
+      `VITE_BASE_URL is not set, so this ${command === 'build' ? 'build' : 'dev server'} ` +
+      'cannot talk to the API.\n' +
       '  Run: cp .env.example .env\n' +
-      '  Then set VITE_BASE_URL (it must include the /api suffix) and build again.'
+      '  Then set VITE_BASE_URL (it must include the /api suffix) and try again.'
     )
   }
 

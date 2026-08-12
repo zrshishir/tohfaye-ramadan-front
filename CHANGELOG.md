@@ -7,9 +7,67 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.7.2] - 2026-08-12
+
+### Fixed
+
+- **The Quran reader showed the same Bangla text twice and hid the English
+  translation.** `bangla_text` and `meaning` are byte-identical in all 6,236 ayats, so
+  the "Bangla" and "Meaning" toggles rendered the same string — while the English
+  translation sat unused in `notes` and was never displayed.
+
+  The reader now follows the convention the Dua screens already use:
+
+  | Line | Field | Label |
+  |---|---|---|
+  | Pronunciation | `english_text` | উচ্চারণ |
+  | Bangla meaning | `meaning` | অর্থ |
+  | English meaning | `notes` | English |
+
+  `bangla_text` is left out until it actually holds the Bangla uccharon — see the note
+  below.
+
+- **Iftar appeared as the next salat.** The next-prayer rotation iterated *every* key on
+  a calendar row and excluded a handful by name, so the derived `iftar` field added in
+  3.4.0 joined the rotation automatically — as had `sehri`, `sunrise` and `ishraq`. It
+  now uses an explicit list of the actual waqts: tahazzud, fajr, zuhr (jummah on Friday),
+  asr, maghrib, isha.
+
+- **Tomorrow's sehri and iftar countdowns were wrong.** The parser split
+  `"06:32 PM"` on `/:| /` and used the hour directly, **discarding the AM/PM** — so
+  iftar was treated as 06:32 in the morning and the countdown was around 12 hours out.
+  Times are now parsed with the meridiem, and a countdown that has already passed shows
+  zero rather than a negative.
+
+- **The Ramadan calendar was pinned to 2024.** The heading read "Ramadan - 2024", and
+  `isToday()` compared against `2024-03-DD`, so **no date could ever be highlighted**
+  after Ramadan 2024. The year now comes from the current date and the month from each
+  row.
+
+- **The Hadith and Masa-el menu icons were 6-byte corrupt files** and rendered as broken
+  images. Rewritten.
+
+### Known data gap
+
+`ayats.bangla_text` should hold the **Bangla uccharon**, as it does for duas. Backend
+commit `225c341` rewrote the ayat seeder to fetch from alquran.cloud and mapped both
+`bangla_text` and `meaning` to the same `bn.bengali` translation, so the pronunciation
+was lost across all 6,236 rows. alquran.cloud publishes no Bengali transliteration
+edition, so restoring it needs a separate source.
+
+
 ## [3.7.1] - 2026-08-11
 
 ### Fixed
+
+- **Tasbih broke against a backend older than 1.2.0.** That release changed
+  `data.tasbih` from a JSON-encoded string to an array, and the screen only handled the
+  array — so against a server that had not been redeployed it received a string, and the
+  counter logic and `v-for` both failed.
+
+  The screen now accepts either shape. A released app can update from the store before
+  the server it talks to is redeployed, so the client should tolerate the older response
+  rather than break.
 
 - **`npm run build` now fails when `VITE_BASE_URL` is unset**, instead of producing a
   bundle with no API URL compiled in.
@@ -20,8 +78,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   like a backend outage rather than a missing file. There was a runtime `console.error`,
   but nothing stopped the build.
 
-  Only enforced for `build`; `npm run dev` still works without a `.env`, falling back to
-  the dev proxy.
+  Enforced for `npm run dev` as well. The dev proxy only forwards paths beginning `/api`,
+  but with no `baseURL` axios issues relative requests like `/permanent-calendar`, which
+  the proxy never sees — so the dev server failed in exactly the same way, screen by
+  screen, with an error dialog and no data.
 
 
 ## [3.7.0] - 2026-08-11

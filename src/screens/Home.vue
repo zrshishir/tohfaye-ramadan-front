@@ -33,6 +33,8 @@
         loading: false,
         currentTime: new Date().getTime(),
         showingStale: false,
+        // Chronological, and Jummah replaces Johr on a Friday (handled below).
+        SALAT_WAQTS: ['tahazzud', 'fazr', 'johr', 'jummah', 'asr', 'magrib', 'esha'],
         leftTime: null,
         nextSalat: null,
         intervalId: null,
@@ -96,10 +98,16 @@
           let currentTime = this.currentDate.toLocaleTimeString('en-US', { hour12: false });
           let foundCurrentPrayer = false;
 
-          for (let prayer in currentDaySalat[0]) {
+          // An explicit list of the actual salat waqts, in order.
+          //
+          // This used to iterate every key on the row and exclude a few by name, so any
+          // new key joined the rotation automatically. Adding the derived `iftar` field
+          // therefore made "Iftar" show up as the next salat, which it is not — and
+          // sehri, sunrise and ishraq were in there for the same reason.
+          for (let prayer of this.SALAT_WAQTS) {
             const isFriday = todayWeekdayName === 'Friday' ? prayer !== "johr" : prayer !== "jummah";
 
-            if ( isFriday && currentDaySalat[0]?.hasOwnProperty(prayer) && prayer !== "day" && prayer !== "id" && prayer !== "month_id" && prayer !== "forbidden" && currentDaySalat[0][prayer]) {
+            if ( isFriday && currentDaySalat[0]?.hasOwnProperty(prayer) && currentDaySalat[0][prayer]) {
               let prayerTime = currentDaySalat[0][prayer];
 
               if ( this.parseTime(currentTime) >= this.parseTime(prayerTime.start_time) && this.parseTime(currentTime) <= this.parseTime(prayerTime.end_time)) {

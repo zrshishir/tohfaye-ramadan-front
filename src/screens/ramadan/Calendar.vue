@@ -25,6 +25,11 @@
 
       }
     },
+    computed: {
+      calendarYear() {
+        return moment().year();
+      },
+    },
     methods: {
       async fetchData() {
         this.loading = true;
@@ -43,16 +48,21 @@
           this.loading = false;
         }
       },
-      isToday(day) {
-        const currentDate = moment().format('YYYY-MM-DD');        
-        return currentDate === `2024-03-${day}`;
+      /** The calendar spans the current month, so the year is simply this year. */
+      dateFor(day, month_id) {
+        const year = moment().year();
+        return moment(`${year}-${String(month_id).padStart(2, '0')}-${String(day).padStart(2, '0')}`, 'YYYY-MM-DD');
       },
-      getWeekName(day) {
-        const date = moment(`2024-03-${day}`, 'YYYY-MM-DD');
+      isToday(day, month_id) {
+        // Was pinned to 2024-03, so nothing was ever "today" after Ramadan 2024.
+        return this.dateFor(day, month_id).isSame(moment(), 'day');
+      },
+      getWeekName(day, month_id) {
+        const date = this.dateFor(day, month_id);
         return date.format('ddd').slice(0, 3);
       },
       getDayWithMonthName(day, month_id) {
-        const date = moment(`2024-${month_id}-${day}`, 'YYYY-MM-DD');
+        const date = this.dateFor(day, month_id);
         return date.format('MMMM');
       },
     },
@@ -84,7 +94,7 @@
     <div v-if="ramadanCalender !== 0" class="ramadan-area">
       <div class="ramadan-header text-center text-white bg-primary py-1">
         <div class="p-6 m-5">
-          <h1 class="text-2xl font-bold">Ramadan - 2024</h1>
+          <h1 class="text-2xl font-bold">Ramadan - {{ calendarYear }}</h1>
           <p class="pt-1">Sheri and Iftar time alart</p>
         </div>
       </div>
@@ -103,9 +113,9 @@
             v-for="(ramadan, index) in ramadanCalender" 
             :key="index" 
             :to="`/ramadan/${ramadan?.id}`" 
-            :class="`content ${isToday(ramadan?.day) && 'current-ramadan'} grid grid-cols-5 gap-[1px] border-b border-primary`"
+            :class="`content ${isToday(ramadan?.day, ramadan?.month_id) && 'current-ramadan'} grid grid-cols-5 gap-[1px] border-b border-primary`"
           >
-            <div class="text-center py-3 font-medium border-r-2 border-gainsboro">{{ getWeekName(ramadan?.day) }}</div>
+            <div class="text-center py-3 font-medium border-r-2 border-gainsboro">{{ getWeekName(ramadan?.day, ramadan?.month_id) }}</div>
             <div class="text-center py-3 font-medium border-r-2 border-gainsboro">{{ ramadan?.day }} {{ getDayWithMonthName(ramadan?.day, ramadan?.month_id) }}</div>
             <div class="text-center py-3 font-medium border-r-2 border-gainsboro">{{ index + 1 }}</div>
             <div class="text-center py-3 font-medium border-r-2 border-gainsboro">{{ ramadan?.sehri?.end_time }}</div>

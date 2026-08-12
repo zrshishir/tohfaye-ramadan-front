@@ -31,17 +31,19 @@ console.log('\ndefaults');
 reset();
 const d = getReaderSettings();
 check('medium font by default', d.fontSize === 'md');
-check('Bangla shown by default', d.showBangla === true);
-check('meaning hidden by default', d.showMeaning === false);
+check('pronunciation shown by default', d.showPronunciation === true);
+check('Bangla meaning shown by default', d.showBangla === true);
+// English is the extra one, off until asked for.
+check('English hidden by default', d.showEnglish === false);
 check('no reading position yet', d.lastRead === null);
 check('no bookmarks yet', Array.isArray(d.bookmarks) && d.bookmarks.length === 0);
 
 console.log('\npreferences persist');
 reset();
-saveReaderSettings({ fontSize: 'xl', showEnglish: false });
+saveReaderSettings({ fontSize: 'xl', showEnglish: true });
 const p = getReaderSettings();
 check('font size saved', p.fontSize === 'xl');
-check('translation toggle saved', p.showEnglish === false);
+check('translation toggle saved', p.showEnglish === true);
 check('untouched keys keep defaults', p.showBangla === true);
 
 console.log('\nfontClasses');

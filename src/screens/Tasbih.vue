@@ -67,6 +67,23 @@
 
       // --------------------------------------------------------------- fetch
 
+      /** Accept either the array (1.2.0+) or the JSON string an older backend sends. */
+      normaliseTasbihs(value) {
+        if (Array.isArray(value)) return value;
+
+        if (typeof value === 'string') {
+          try {
+            const parsed = JSON.parse(value);
+            return Array.isArray(parsed) ? parsed : [];
+          } catch {
+            console.error('Could not parse the tasbih payload from the server.');
+            return [];
+          }
+        }
+
+        return [];
+      },
+
       async fetchTasbihs() {
         this.loading = true;
 
@@ -82,9 +99,11 @@
             params: { user_id: USER_ID },
           });
 
-          // `data.tasbih` is a JSON array. It used to be a JSON-encoded string
-          // that the client had to JSON.parse().
-          const serverTasbihs = response.data?.data?.tasbih ?? [];
+          // Backend 1.2.0+ returns `data.tasbih` as a JSON array; before that it was a
+          // JSON-encoded string. Both are accepted, because an app can update from the
+          // store before the server it talks to is redeployed — and a released app
+          // should not break on the older shape.
+          const serverTasbihs = this.normaliseTasbihs(response.data?.data?.tasbih);
 
           // Server owns the dhikr list (text, reset_on); the device owns the counters.
           this.tasbihs = serverTasbihs.map((dhikr) => {
