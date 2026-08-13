@@ -16,8 +16,31 @@ android {
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    // Signing is driven entirely by Gradle properties, which CI writes from repository
+    // secrets. No key material is ever committed, and a build without the properties still
+    // succeeds — it just produces an unsigned APK that Android will refuse to install.
+    //
+    // For a local signed build, put these in ~/.gradle/gradle.properties (NOT this repo):
+    //   RELEASE_STORE_FILE=/absolute/path/to/your.keystore
+    //   RELEASE_STORE_PASSWORD=...
+    //   RELEASE_KEY_ALIAS=...
+    //   RELEASE_KEY_PASSWORD=...
+    signingConfigs {
+        release {
+            if (project.hasProperty('RELEASE_STORE_FILE')) {
+                storeFile file(project.property('RELEASE_STORE_FILE'))
+                storePassword project.property('RELEASE_STORE_PASSWORD')
+                keyAlias project.property('RELEASE_KEY_ALIAS')
+                keyPassword project.property('RELEASE_KEY_PASSWORD')
+            }
+        }
+    }
+
     buildTypes {
         release {
+            if (project.hasProperty('RELEASE_STORE_FILE')) {
+                signingConfig signingConfigs.release
+            }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
