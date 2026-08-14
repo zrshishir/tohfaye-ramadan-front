@@ -16,8 +16,10 @@
 bin/
 gen/
 out/
-#  Uncomment the following line in case you need and you don't have the release build type files in your app
-# release/
+# Gradle writes app/release/output-metadata.json here after a release build. A copy of it
+# was committed, carrying a stale record of the old package name and version. It is build
+# output, not source.
+release/
 
 # Gradle files
 .gradle/

@@ -1,4 +1,4 @@
-package com.tazqiah.prayerPulse;
+package com.makrosh.prayerpulse;
 
 import com.getcapacitor.BridgeActivity;
 
