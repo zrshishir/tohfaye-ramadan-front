@@ -88,11 +88,13 @@ jobs:
           fi
           echo "Confirmed: the bundle targets $API_BASE_URL"
 
-      - name: Set up JDK 17
+      # Capacitor 8 compiles against Java 21 (sourceCompatibility/targetCompatibility are
+      # VERSION_21 in its Android library), so 17 no longer builds.
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '21'
 
       - name: Set up the Android SDK
         uses: android-actions/setup-android@v3
