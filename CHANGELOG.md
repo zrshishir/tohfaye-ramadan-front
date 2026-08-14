@@ -7,6 +7,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.8.0] - 2026-08-13
+
+### Added
+
+- **`Build Android APK` workflow.** Actions tab → Run workflow → download the APK from the
+  run's artifacts. Choose which API it targets and whether to build debug or release.
+
+  There is no JDK or Android SDK on the dev Mac, and the GitHub runners already have both,
+  so building in CI means anyone on the team can produce an installable APK without a
+  multi-gigabyte local toolchain.
+
+  It also runs on any pull request touching `android/`, `capacitor.config.json` or
+  `package.json`, so a change that breaks the APK build is caught in review rather than
+  discovered the next time a build is needed.
+
+  The build fails if the chosen API URL is not found in the compiled bundle. Vite inlines
+  those values, and a build has previously succeeded with `VITE_BASE_URL` undefined and
+  shipped an app whose every request went nowhere — a blank home screen with nothing in the
+  logs to explain it.
+
+- **`docs/android-builds.md`** — how to get an APK, how signing is wired, how to build
+  locally, and what the Play Store gap involves.
+
+- **Optional release signing**, driven entirely by repository secrets
+  (`ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`,
+  `ANDROID_KEY_PASSWORD`). `android/app/build.gradle` had no `signingConfigs` block at all,
+  so `assembleRelease` produced an unsigned APK regardless. It now enables signing only
+  when the properties are present, so an unsigned build still succeeds rather than failing
+  confusingly.
+
+### Security
+
+- **`android/.gitignore` no longer leaves keystores committable.** The `*.jks` and
+  `*.keystore` lines shipped commented out by the Android template, so a keystore dropped
+  into that directory would have been committed. A signing key is the app's identity on
+  Google Play: it cannot be rotated for an existing listing, and publishing it lets anyone
+  ship an update signed as you.
+
+### Notes
+
+- **The app cannot currently be published to Google Play.** `targetSdkVersion` is 33. From
+  31 August 2026 updates must target API 36, and existing apps need API 35 to stay
+  available to new users; an extension can be requested until 1 November 2026.
+
+  Closing that gap means **Capacitor 5 → 7**, along with every plugin, `compileSdk` 36 and
+  JDK 21. `@capacitor/local-notifications` needs the most care, since prayer reminders run
+  through it and Android 13+ tightened both the runtime notification permission and
+  exact-alarm scheduling. Tracked as its own piece of work with its own device QA.
+
+- `versionCode` (2) and `versionName` (2.0.0) are deliberately unchanged. `versionCode`
+  must increase for every Play Store upload and is irrelevant for sideloading, so it should
+  move when a store release is actually being prepared.
+
 ## [3.7.2] - 2026-08-12
 
 ### Fixed
