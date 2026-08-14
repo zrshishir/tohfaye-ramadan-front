@@ -7,6 +7,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.9.0] - 2026-08-13
+
+### Changed
+
+- **Application identifier `com.tazqiah.prayerPulse` → `com.makrosh.prayerpulse`**, ahead of
+  submitting from the new Makrosh organisation account.
+
+  Package names are globally unique on Google Play and reserved **permanently** — including
+  for apps that were only ever submitted, never published. The previous submission was in
+  review when that developer account closed, so the old identifier is very likely
+  unavailable to the new account. Changing it now costs nothing; after a release it is
+  impossible without a new listing and every user reinstalling by hand.
+
+  Lower-cased while renaming (`prayerPulse` → `prayerpulse`) to match Java package
+  convention and avoid case-sensitivity differences between the source tree and the
+  filesystem.
+
+  Touched: `capacitor.config.json`, the Gradle `namespace` and `applicationId`,
+  `strings.xml` (`package_name`, `custom_url_scheme`), the `MainActivity` package
+  declaration and its directory, and the iOS `PRODUCT_BUNDLE_IDENTIFIER`.
+
+  **An installed build of the old identifier is a separate app to Android.** It will not be
+  upgraded in place — uninstall it before installing a new APK.
+
+### Fixed
+
+- `android/app/release/output-metadata.json`, a Gradle build output, was committed and
+  carried a stale record of the old package name and version. Removed, and `release/` is
+  now ignored — that rule shipped commented out in the Android template.
+
+### Notes
+
+- The API domain is untouched. `prayerpulse.tazqiah.com` is where the backend is hosted,
+  which is a separate decision from the app identifier; the workflow's default API URL
+  still points there. Worth revisiting if the backend moves to a Makrosh domain.
+
 ## [3.8.0] - 2026-08-13
 
 ### Added
