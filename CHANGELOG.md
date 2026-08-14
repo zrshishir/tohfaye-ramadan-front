@@ -7,6 +7,161 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.0.0] - 2026-08-14
+
+Unblocks Google Play submission.
+
+### Changed
+
+- **Capacitor 5 → 8, and Android `targetSdk` 33 → 36.**
+
+  Play requires updates to target API 36 from **31 August 2026**, with existing apps needing
+  API 35 to stay available to new users. `targetSdkVersion` is not a number you can just
+  edit — Capacitor pins what the native project supports, so the Play requirement was a
+  Capacitor upgrade in disguise. Capacitor is at **8.5.0**, three majors on, not the two
+  originally estimated.
+
+  | | Before | After |
+  |---|---|---|
+  | `@capacitor/core`, `android`, `ios`, `cli` | 5.7.x | 8.5.0 |
+  | `@capacitor/app` | 5.0.7 | 8.1.1 |
+  | `@capacitor/geolocation` | 5.0.7 | 8.2.2 |
+  | `@capacitor/local-notifications` | 5.0.8 | 8.2.1 |
+  | `@capacitor/preferences` | 5.0.7 | 8.0.1 |
+  | `compileSdk` / `targetSdk` | 33 | **36** |
+  | `minSdk` | 22 | 24 |
+  | Gradle | 8.0.2 | 8.14.3 |
+  | Android Gradle Plugin | 8.0.2 | 8.13.0 |
+  | JDK | 17 | 21 |
+  | Node (CI) | 20 | 22 |
+
+  SDK and androidx versions were taken from the Capacitor 8 project template rather than
+  chosen, so they match what a fresh `cap add android` produces.
+
+  **No JavaScript changed.** Every plugin call the app makes — `addListener`, `exitApp`,
+  `getCurrentPosition`, `Preferences.get`/`set`, and `requestPermissions`, `getPending`,
+  `cancel`, `schedule` — has a stable signature across these majors. All four check suites
+  pass unchanged and the web bundle is identical in size.
+
+- **`minSdk` 22 → 24** drops Android 5.0 and 5.1 (2015). This is the Capacitor 8 floor, not
+  a preference; there is no route to targetSdk 36 that keeps Lollipop.
+
+### Removed
+
+- `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_STORAGE`. Nothing in the app reads or writes
+  files — there is no Filesystem plugin, and the `FileProvider` is unused Capacitor
+  scaffolding. Both are no-ops from API 33, and requesting storage access an app does not
+  use invites Play review questions while making the permission list look worse than the
+  app actually is.
+
+### Added
+
+- The APK workflow now **reads the built artifact back with `aapt2 dump badging`** and
+  reports the package name and targetSdk from the APK's own manifest, warning if it falls
+  below Play's floor. Play rejects on what is in the uploaded artifact, and a build can pick
+  up a stale targetSdk without any source file looking wrong.
+
+### Notes
+
+- **`USE_EXACT_ALARM` is a Play-restricted permission** and is still declared. It grants
+  exact alarms without user opt-in, and Google limits it to apps whose core function is
+  alarms, clocks or calendars. A prayer-reminder app is a plausible fit but **will** be
+  reviewed and needs justification at submission. The alternative — dropping it and relying
+  on `SCHEDULE_EXACT_ALARM` alone — makes the user grant "Alarms & reminders" by hand.
+  Deliberately left as-is: it is a product decision, not a technical one.
+
+- This needs a device QA pass before release. Android 13+ changed notification permissions
+  and exact-alarm scheduling most, and prayer reminders depend on both.
+
+## [3.9.0] - 2026-08-13
+
+### Changed
+
+- **Application identifier `com.tazqiah.prayerPulse` → `com.makrosh.prayerpulse`**, ahead of
+  submitting from the new Makrosh organisation account.
+
+  Package names are globally unique on Google Play and reserved **permanently** — including
+  for apps that were only ever submitted, never published. The previous submission was in
+  review when that developer account closed, so the old identifier is very likely
+  unavailable to the new account. Changing it now costs nothing; after a release it is
+  impossible without a new listing and every user reinstalling by hand.
+
+  Lower-cased while renaming (`prayerPulse` → `prayerpulse`) to match Java package
+  convention and avoid case-sensitivity differences between the source tree and the
+  filesystem.
+
+  Touched: `capacitor.config.json`, the Gradle `namespace` and `applicationId`,
+  `strings.xml` (`package_name`, `custom_url_scheme`), the `MainActivity` package
+  declaration and its directory, and the iOS `PRODUCT_BUNDLE_IDENTIFIER`.
+
+  **An installed build of the old identifier is a separate app to Android.** It will not be
+  upgraded in place — uninstall it before installing a new APK.
+
+### Fixed
+
+- `android/app/release/output-metadata.json`, a Gradle build output, was committed and
+  carried a stale record of the old package name and version. Removed, and `release/` is
+  now ignored — that rule shipped commented out in the Android template.
+
+### Notes
+
+- The API domain is untouched. `prayerpulse.tazqiah.com` is where the backend is hosted,
+  which is a separate decision from the app identifier; the workflow's default API URL
+  still points there. Worth revisiting if the backend moves to a Makrosh domain.
+
+## [3.8.0] - 2026-08-13
+
+### Added
+
+- **`Build Android APK` workflow.** Actions tab → Run workflow → download the APK from the
+  run's artifacts. Choose which API it targets and whether to build debug or release.
+
+  There is no JDK or Android SDK on the dev Mac, and the GitHub runners already have both,
+  so building in CI means anyone on the team can produce an installable APK without a
+  multi-gigabyte local toolchain.
+
+  It also runs on any pull request touching `android/`, `capacitor.config.json` or
+  `package.json`, so a change that breaks the APK build is caught in review rather than
+  discovered the next time a build is needed.
+
+  The build fails if the chosen API URL is not found in the compiled bundle. Vite inlines
+  those values, and a build has previously succeeded with `VITE_BASE_URL` undefined and
+  shipped an app whose every request went nowhere — a blank home screen with nothing in the
+  logs to explain it.
+
+- **`docs/android-builds.md`** — how to get an APK, how signing is wired, how to build
+  locally, and what the Play Store gap involves.
+
+- **Optional release signing**, driven entirely by repository secrets
+  (`ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`,
+  `ANDROID_KEY_PASSWORD`). `android/app/build.gradle` had no `signingConfigs` block at all,
+  so `assembleRelease` produced an unsigned APK regardless. It now enables signing only
+  when the properties are present, so an unsigned build still succeeds rather than failing
+  confusingly.
+
+### Security
+
+- **`android/.gitignore` no longer leaves keystores committable.** The `*.jks` and
+  `*.keystore` lines shipped commented out by the Android template, so a keystore dropped
+  into that directory would have been committed. A signing key is the app's identity on
+  Google Play: it cannot be rotated for an existing listing, and publishing it lets anyone
+  ship an update signed as you.
+
+### Notes
+
+- **The app cannot currently be published to Google Play.** `targetSdkVersion` is 33. From
+  31 August 2026 updates must target API 36, and existing apps need API 35 to stay
+  available to new users; an extension can be requested until 1 November 2026.
+
+  Closing that gap means **Capacitor 5 → 7**, along with every plugin, `compileSdk` 36 and
+  JDK 21. `@capacitor/local-notifications` needs the most care, since prayer reminders run
+  through it and Android 13+ tightened both the runtime notification permission and
+  exact-alarm scheduling. Tracked as its own piece of work with its own device QA.
+
+- `versionCode` (2) and `versionName` (2.0.0) are deliberately unchanged. `versionCode`
+  must increase for every Play Store upload and is irrelevant for sideloading, so it should
+  move when a store release is actually being prepared.
+
 ## [3.7.2] - 2026-08-12
 
 ### Fixed
