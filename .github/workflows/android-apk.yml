@@ -143,11 +143,33 @@ jobs:
           echo "path=$APK" >> "$GITHUB_OUTPUT"
           echo "Built $APK ($(du -h "$APK" | cut -f1))"
 
+      # Read the values back out of the APK itself rather than trusting the Gradle files.
+      # Google Play rejects on what is actually in the manifest of the uploaded artifact,
+      # so that is what needs checking — a build can pick up a stale targetSdk without any
+      # of the source files looking wrong.
+      - name: Inspect the built APK
+        id: badging
+        run: |
+          AAPT=$(find "$ANDROID_HOME/build-tools" -name aapt2 | sort -V | tail -1)
+          BADGING=$("$AAPT" dump badging "${{ steps.apk.outputs.path }}")
+          echo "$BADGING" | grep -E "^package:|sdkVersion|targetSdkVersion|uses-permission" || true
+
+          APK_TARGET=$(echo "$BADGING" | grep -oE "targetSdkVersion:'[0-9]+'" | grep -oE "[0-9]+")
+          APK_PACKAGE=$(echo "$BADGING" | grep -oE "package: name='[^']+'" | sed "s/package: name='//;s/'//")
+
+          echo "target_sdk=$APK_TARGET" >> "$GITHUB_OUTPUT"
+          echo "package=$APK_PACKAGE" >> "$GITHUB_OUTPUT"
+
+          if [ "$APK_TARGET" -lt 35 ]; then
+            echo "::warning::The APK targets API $APK_TARGET. Google Play requires 36 for updates from 31 August 2026, and 35 for existing apps to stay available to new users."
+          fi
+
       - name: Report what was built
         run: |
           VERSION_NAME=$(grep -m1 'versionName' android/app/build.gradle | tr -d '"' | awk '{print $2}')
           VERSION_CODE=$(grep -m1 'versionCode' android/app/build.gradle | awk '{print $2}')
-          TARGET_SDK=$(grep -m1 'targetSdkVersion' android/variables.gradle | awk -F'= ' '{print $2}')
+          TARGET_SDK="${{ steps.badging.outputs.target_sdk }}"
+          APK_PACKAGE="${{ steps.badging.outputs.package }}"
           SIGNED="no — install will be refused until it is signed"
           if [ "$BUILD_TYPE" = "debug" ]; then
             SIGNED="yes, with the Android debug key (fine for sideloading)"
@@ -159,6 +181,7 @@ jobs:
             echo ""
             echo "| | |"
             echo "|---|---|"
+            echo "| Package | \`$APK_PACKAGE\` |"
             echo "| Build type | \`$BUILD_TYPE\` |"
             echo "| Signed | $SIGNED |"
             echo "| API | \`$API_BASE_URL\` |"
@@ -169,9 +192,12 @@ jobs:
             if [ "$TARGET_SDK" -lt 35 ]; then
               echo "> **Not publishable to Google Play.** From 31 August 2026, updates must"
               echo "> target API 36 and existing apps need API 35 to stay available to new"
-              echo "> users. Reaching either requires Capacitor 5 → 7."
+              echo "> users."
               echo ">"
               echo "> This build is for testing and direct install only."
+            else
+              echo "> targetSdk **$TARGET_SDK** meets Google Play's requirement, read back from"
+              echo "> the APK's own manifest rather than from the Gradle files."
             fi
           } >> "$GITHUB_STEP_SUMMARY"
 
