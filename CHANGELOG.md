@@ -7,6 +7,72 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.0.0] - 2026-08-14
+
+Unblocks Google Play submission.
+
+### Changed
+
+- **Capacitor 5 → 8, and Android `targetSdk` 33 → 36.**
+
+  Play requires updates to target API 36 from **31 August 2026**, with existing apps needing
+  API 35 to stay available to new users. `targetSdkVersion` is not a number you can just
+  edit — Capacitor pins what the native project supports, so the Play requirement was a
+  Capacitor upgrade in disguise. Capacitor is at **8.5.0**, three majors on, not the two
+  originally estimated.
+
+  | | Before | After |
+  |---|---|---|
+  | `@capacitor/core`, `android`, `ios`, `cli` | 5.7.x | 8.5.0 |
+  | `@capacitor/app` | 5.0.7 | 8.1.1 |
+  | `@capacitor/geolocation` | 5.0.7 | 8.2.2 |
+  | `@capacitor/local-notifications` | 5.0.8 | 8.2.1 |
+  | `@capacitor/preferences` | 5.0.7 | 8.0.1 |
+  | `compileSdk` / `targetSdk` | 33 | **36** |
+  | `minSdk` | 22 | 24 |
+  | Gradle | 8.0.2 | 8.14.3 |
+  | Android Gradle Plugin | 8.0.2 | 8.13.0 |
+  | JDK | 17 | 21 |
+  | Node (CI) | 20 | 22 |
+
+  SDK and androidx versions were taken from the Capacitor 8 project template rather than
+  chosen, so they match what a fresh `cap add android` produces.
+
+  **No JavaScript changed.** Every plugin call the app makes — `addListener`, `exitApp`,
+  `getCurrentPosition`, `Preferences.get`/`set`, and `requestPermissions`, `getPending`,
+  `cancel`, `schedule` — has a stable signature across these majors. All four check suites
+  pass unchanged and the web bundle is identical in size.
+
+- **`minSdk` 22 → 24** drops Android 5.0 and 5.1 (2015). This is the Capacitor 8 floor, not
+  a preference; there is no route to targetSdk 36 that keeps Lollipop.
+
+### Removed
+
+- `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_STORAGE`. Nothing in the app reads or writes
+  files — there is no Filesystem plugin, and the `FileProvider` is unused Capacitor
+  scaffolding. Both are no-ops from API 33, and requesting storage access an app does not
+  use invites Play review questions while making the permission list look worse than the
+  app actually is.
+
+### Added
+
+- The APK workflow now **reads the built artifact back with `aapt2 dump badging`** and
+  reports the package name and targetSdk from the APK's own manifest, warning if it falls
+  below Play's floor. Play rejects on what is in the uploaded artifact, and a build can pick
+  up a stale targetSdk without any source file looking wrong.
+
+### Notes
+
+- **`USE_EXACT_ALARM` is a Play-restricted permission** and is still declared. It grants
+  exact alarms without user opt-in, and Google limits it to apps whose core function is
+  alarms, clocks or calendars. A prayer-reminder app is a plausible fit but **will** be
+  reviewed and needs justification at submission. The alternative — dropping it and relying
+  on `SCHEDULE_EXACT_ALARM` alone — makes the user grant "Alarms & reminders" by hand.
+  Deliberately left as-is: it is a product decision, not a technical one.
+
+- This needs a device QA pass before release. Android 13+ changed notification permissions
+  and exact-alarm scheduling most, and prayer reminders depend on both.
+
 ## [3.9.0] - 2026-08-13
 
 ### Changed
