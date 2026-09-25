@@ -97,8 +97,28 @@ jobs:
           distribution: temurin
           java-version: '21'
 
+      # Not android-actions/setup-android: its v3 asks sdkmanager for the obsolete
+      # `tools` package, which has been withdrawn from the SDK repository, so the action
+      # now fails on every run with "Failed to find package 'tools'".
+      #
+      # The runner image already ships the SDK and sets ANDROID_HOME, so only the
+      # specific packages this build needs have to be installed.
       - name: Set up the Android SDK
-        uses: android-actions/setup-android@v3
+        run: |
+          SDKMANAGER=$(find "$ANDROID_HOME/cmdline-tools" -name sdkmanager -type f 2>/dev/null | sort -V | tail -1)
+          if [ -z "$SDKMANAGER" ]; then
+            echo "::error::sdkmanager not found under $ANDROID_HOME/cmdline-tools"
+            exit 1
+          fi
+          echo "Using $SDKMANAGER"
+
+          yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
+          "$SDKMANAGER" --install \
+            "platform-tools" \
+            "platforms;android-36" \
+            "build-tools;36.0.0" > /dev/null
+
+          echo "$ANDROID_HOME/platform-tools" >> "$GITHUB_PATH"
 
       - name: Sync the web build into the Android project
         run: npx cap sync android
